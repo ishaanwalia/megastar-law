@@ -1,37 +1,37 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { SubmitButton } from "@/components/submit-button";
-import { MatterFormFields } from "../matter-form-fields";
-import { createMatter } from "../actions";
+import type { Client } from "@/lib/crm/types";
+import { ClientFormFields } from "../../client-form-fields";
+import { updateClientRecord } from "../../actions";
 
-export default async function NewMatterPage({
-  searchParams,
+export default async function EditClientPage({
+  params,
 }: {
-  searchParams: Promise<{ client_id?: string }>;
+  params: Promise<{ id: string }>;
 }) {
-  const { client_id } = await searchParams;
-  if (!client_id) notFound();
-
+  const { id } = await params;
   const supabase = await createClient();
   const { data: client } = await supabase
     .from("clients")
-    .select("id, full_name")
-    .eq("id", client_id)
+    .select("*")
+    .eq("id", id)
     .maybeSingle();
 
   if (!client) notFound();
 
+  const updateClientWithId = updateClientRecord.bind(null, id);
+
   return (
     <div className="max-w-xl">
       <h1 className="font-heading text-2xl font-medium tracking-tight">
-        New Matter for {client.full_name}
+        Edit {(client as Client).full_name}
       </h1>
 
-      <form action={createMatter} className="mt-6">
-        <input type="hidden" name="client_id" value={client.id} />
-        <MatterFormFields />
+      <form action={updateClientWithId} className="mt-6">
+        <ClientFormFields defaultValues={client as Client} />
         <SubmitButton size="lg" pendingText="Saving…" className="mt-6">
-          Save Matter
+          Save Changes
         </SubmitButton>
       </form>
     </div>

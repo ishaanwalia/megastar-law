@@ -1,13 +1,15 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { format } from "date-fns";
-import { Plus } from "lucide-react";
+import { Plus, Pencil } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { Client, Matter } from "@/lib/crm/types";
 import { StageSelect } from "../stage-select";
+import { trashClient } from "../actions";
+import { DeleteButton } from "../../delete-button";
 
 export default async function ClientDetailPage({
   params,
@@ -18,11 +20,17 @@ export default async function ClientDetailPage({
   const supabase = await createClient();
 
   const [{ data: client }, { data: matters }] = await Promise.all([
-    supabase.from("clients").select("*").eq("id", id).maybeSingle(),
+    supabase
+      .from("clients")
+      .select("*")
+      .eq("id", id)
+      .is("deleted_at", null)
+      .maybeSingle(),
     supabase
       .from("matters")
       .select("*")
       .eq("client_id", id)
+      .is("deleted_at", null)
       .order("created_at", { ascending: false }),
   ]);
 
@@ -40,7 +48,7 @@ export default async function ClientDetailPage({
         &larr; All Leads &amp; Clients
       </Link>
 
-      <div className="mt-3 flex items-center justify-between">
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="font-heading text-2xl font-medium tracking-tight">
             {c.full_name}
@@ -49,15 +57,72 @@ export default async function ClientDetailPage({
             {c.phone} {c.email ? `· ${c.email}` : ""}
           </p>
         </div>
-        <StageSelect clientId={c.id} stage={c.stage} />
+        <div className="flex items-center gap-2">
+          <StageSelect clientId={c.id} stage={c.stage} />
+          <Button
+            variant="outline"
+            size="sm"
+            nativeButton={false}
+            render={<Link href={`/dashboard/clients/${c.id}/edit`} />}
+          >
+            <Pencil className="size-3.5" /> Edit
+          </Button>
+          <DeleteButton
+            confirmMessage={`Move "${c.full_name}" to Trash? You can restore it within 7 days.`}
+            onDelete={trashClient.bind(null, c.id)}
+          />
+        </div>
       </div>
 
       <Card className="mt-6 grid gap-4 p-5 sm:grid-cols-2">
         <div>
           <div className="text-xs tracking-wide text-muted-foreground uppercase">
+            Alternate Phone
+          </div>
+          <div className="mt-0.5 text-sm">{c.alternate_phone ?? "—"}</div>
+        </div>
+        <div>
+          <div className="text-xs tracking-wide text-muted-foreground uppercase">
+            Date of Birth
+          </div>
+          <div className="mt-0.5 text-sm">
+            {c.date_of_birth
+              ? format(new Date(c.date_of_birth), "d MMM yyyy")
+              : "—"}
+          </div>
+        </div>
+        <div className="sm:col-span-2">
+          <div className="text-xs tracking-wide text-muted-foreground uppercase">
+            Address
+          </div>
+          <div className="mt-0.5 text-sm whitespace-pre-wrap">
+            {c.address ?? "—"}
+          </div>
+        </div>
+        <div>
+          <div className="text-xs tracking-wide text-muted-foreground uppercase">
+            ID Proof
+          </div>
+          <div className="mt-0.5 text-sm">
+            {c.id_proof_type
+              ? `${c.id_proof_type}${c.id_proof_number ? ` — ${c.id_proof_number}` : ""}`
+              : "—"}
+          </div>
+        </div>
+        <div>
+          <div className="text-xs tracking-wide text-muted-foreground uppercase">
+            Occupation
+          </div>
+          <div className="mt-0.5 text-sm">{c.occupation ?? "—"}</div>
+        </div>
+        <div>
+          <div className="text-xs tracking-wide text-muted-foreground uppercase">
             Source
           </div>
-          <div className="mt-0.5 text-sm">{c.source ?? "—"}</div>
+          <div className="mt-0.5 text-sm">
+            {c.source ?? "—"}
+            {c.referred_by ? ` (${c.referred_by})` : ""}
+          </div>
         </div>
         <div>
           <div className="text-xs tracking-wide text-muted-foreground uppercase">
@@ -69,7 +134,9 @@ export default async function ClientDetailPage({
           <div className="text-xs tracking-wide text-muted-foreground uppercase">
             NRI
           </div>
-          <div className="mt-0.5 text-sm">{c.is_nri ? "Yes" : "No"}</div>
+          <div className="mt-0.5 text-sm">
+            {c.is_nri ? `Yes${c.nri_country ? ` — ${c.nri_country}` : ""}` : "No"}
+          </div>
         </div>
         <div>
           <div className="text-xs tracking-wide text-muted-foreground uppercase">

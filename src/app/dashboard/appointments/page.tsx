@@ -4,6 +4,8 @@ import { Plus } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import type { Appointment } from "@/lib/crm/types";
+import { trashAppointment } from "./actions";
+import { DeleteButton } from "../delete-button";
 
 type AppointmentWithClient = Appointment & {
   clients: { full_name: string } | null;
@@ -14,6 +16,7 @@ export default async function AppointmentsPage() {
   const { data } = await supabase
     .from("appointments")
     .select("*, clients(full_name)")
+    .is("deleted_at", null)
     .order("scheduled_at", { ascending: true });
 
   const appointments = (data ?? []) as AppointmentWithClient[];
@@ -42,7 +45,7 @@ export default async function AppointmentsPage() {
         {appointments.map((apt) => (
           <div
             key={apt.id}
-            className="flex items-center justify-between rounded-xl border border-border p-4"
+            className="flex items-center justify-between gap-3 rounded-xl border border-border p-4"
           >
             <div>
               <div className="text-sm font-medium">{apt.title}</div>
@@ -51,8 +54,15 @@ export default async function AppointmentsPage() {
                 {apt.location ? ` · ${apt.location}` : ""}
               </div>
             </div>
-            <div className="text-sm text-muted-foreground">
-              {format(new Date(apt.scheduled_at), "d MMM yyyy, h:mm a")}
+            <div className="flex items-center gap-3">
+              <div className="text-sm text-muted-foreground">
+                {format(new Date(apt.scheduled_at), "d MMM yyyy, h:mm a")}
+              </div>
+              <DeleteButton
+                label=""
+                confirmMessage={`Move "${apt.title}" to Trash?`}
+                onDelete={trashAppointment.bind(null, apt.id)}
+              />
             </div>
           </div>
         ))}

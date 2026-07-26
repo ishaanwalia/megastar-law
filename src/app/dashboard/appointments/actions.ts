@@ -34,3 +34,27 @@ export async function createAppointment(formData: FormData) {
   revalidatePath("/dashboard/appointments");
   redirect("/dashboard/appointments");
 }
+
+export async function trashAppointment(appointmentId: string) {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("appointments")
+    .update({ deleted_at: new Date().toISOString() })
+    .eq("id", appointmentId);
+
+  if (error) throw new Error(error.message);
+  revalidatePath("/dashboard/appointments");
+  revalidatePath("/dashboard/trash");
+}
+
+export async function restoreAppointment(appointmentId: string) {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("appointments")
+    .update({ deleted_at: null })
+    .eq("id", appointmentId);
+
+  if (error) throw new Error(error.message);
+  revalidatePath("/dashboard/appointments");
+  revalidatePath("/dashboard/trash");
+}

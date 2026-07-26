@@ -1,8 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { SubmitButton } from "@/components/submit-button";
 import { createAppointment } from "../actions";
 
 export default async function NewAppointmentPage() {
@@ -10,6 +10,7 @@ export default async function NewAppointmentPage() {
   const { data: clients } = await supabase
     .from("clients")
     .select("id, full_name")
+    .is("deleted_at", null)
     .order("full_name");
 
   return (
@@ -63,9 +64,9 @@ export default async function NewAppointmentPage() {
             <Textarea id="notes" name="notes" rows={3} />
           </Field>
 
-          <Button type="submit" size="lg">
+          <SubmitButton size="lg" pendingText="Saving…">
             Save Appointment
-          </Button>
+          </SubmitButton>
         </FieldGroup>
       </form>
     </div>

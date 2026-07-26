@@ -11,6 +11,7 @@ export default async function MattersPage() {
   const { data } = await supabase
     .from("matters")
     .select("*, clients(full_name)")
+    .is("deleted_at", null)
     .order("next_hearing_date", { ascending: true, nullsFirst: false });
 
   const matters = (data ?? []) as MatterWithClient[];
@@ -27,8 +28,10 @@ export default async function MattersPage() {
             <tr>
               <th className="px-4 py-2.5">Client</th>
               <th className="px-4 py-2.5">Practice Area</th>
+              <th className="px-4 py-2.5">Under Section</th>
               <th className="px-4 py-2.5">Court</th>
               <th className="px-4 py-2.5">Case No.</th>
+              <th className="px-4 py-2.5">Stage</th>
               <th className="px-4 py-2.5">Next Hearing</th>
               <th className="px-4 py-2.5">Status</th>
             </tr>
@@ -51,10 +54,16 @@ export default async function MattersPage() {
                   {matter.practice_area ?? "—"}
                 </td>
                 <td className="px-4 py-2.5 text-muted-foreground">
+                  {matter.under_section ?? "—"}
+                </td>
+                <td className="px-4 py-2.5 text-muted-foreground">
                   {matter.court ?? "—"}
                 </td>
                 <td className="px-4 py-2.5 text-muted-foreground">
                   {matter.case_number ?? "—"}
+                </td>
+                <td className="px-4 py-2.5 text-muted-foreground">
+                  {matter.litigation_stage ?? "—"}
                 </td>
                 <td className="px-4 py-2.5 text-muted-foreground">
                   {matter.next_hearing_date
@@ -74,7 +83,7 @@ export default async function MattersPage() {
             {matters.length === 0 && (
               <tr>
                 <td
-                  colSpan={6}
+                  colSpan={8}
                   className="px-4 py-8 text-center text-muted-foreground"
                 >
                   No matters yet — add one from a client&apos;s page.

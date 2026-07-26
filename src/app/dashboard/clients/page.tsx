@@ -11,6 +11,7 @@ export default async function ClientsPage() {
   const { data } = await supabase
     .from("clients")
     .select("*")
+    .is("deleted_at", null)
     .order("created_at", { ascending: false });
 
   const clients = (data ?? []) as Client[];

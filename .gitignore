@@ -40,3 +40,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 lighthouse-*.json
+
+# client-supplied reference documents — not part of the codebase
+/*.docx

@@ -13,18 +13,21 @@ export default async function DashboardOverviewPage() {
         .from("clients")
         .select("*")
         .eq("stage", "new")
+        .is("deleted_at", null)
         .order("created_at", { ascending: false })
         .limit(5),
       supabase
         .from("appointments")
         .select("*")
         .gte("scheduled_at", new Date().toISOString())
+        .is("deleted_at", null)
         .order("scheduled_at", { ascending: true })
         .limit(5),
       supabase
         .from("clients")
         .select("*", { count: "exact", head: true })
-        .not("stage", "in", "(closed_won,closed_lost)"),
+        .not("stage", "in", "(closed_won,closed_lost)")
+        .is("deleted_at", null),
     ]);
 
   const leads = (newLeads ?? []) as Client[];
