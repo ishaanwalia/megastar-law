@@ -2,7 +2,9 @@
 
 import { z } from "zod";
 import { Resend } from "resend";
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { firm } from "@/lib/firm-data";
+import { ContactNotificationEmail } from "@/emails/contact-notification";
 
 const contactSchema = z.object({
   name: z.string().trim().min(2, "Enter your full name"),
@@ -41,6 +43,27 @@ export async function submitContactForm(
 
   const { name, phone, email, practiceArea, message } = parsed.data;
 
+  // Land every website submission as a new CRM lead — best-effort, never
+  // blocks the visitor's form submission if the CRM database is unreachable.
+  if (
+    process.env.NEXT_PUBLIC_SUPABASE_URL &&
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+  ) {
+    const supabase = createSupabaseClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+    );
+    await supabase.from("clients").insert({
+      full_name: name,
+      phone,
+      email: email || null,
+      source: "Website",
+      practice_area: practiceArea || null,
+      notes: message,
+      stage: "new",
+    });
+  }
+
   if (process.env.RESEND_API_KEY) {
     const resend = new Resend(process.env.RESEND_API_KEY);
     try {
@@ -49,16 +72,13 @@ export async function submitContactForm(
         to: firm.email,
         replyTo: email || undefined,
         subject: `New consultation request — ${name}`,
-        text: [
-          `Name: ${name}`,
-          `Phone: ${phone}`,
-          email ? `Email: ${email}` : null,
-          practiceArea ? `Practice area: ${practiceArea}` : null,
-          "",
+        react: ContactNotificationEmail({
+          name,
+          phone,
+          email,
+          practiceArea,
           message,
-        ]
-          .filter(Boolean)
-          .join("\n"),
+        }),
       });
     } catch {
       return {

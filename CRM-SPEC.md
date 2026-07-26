@@ -2,6 +2,8 @@
 
 Purpose: a simple, secure internal tool for Pradeep and Nikhil to track leads, clients, and cases from first contact through resolution — not a full practice-management suite. Scoped deliberately small so it actually gets used daily.
 
+**Status (2026-07-26): v1 built and tested end-to-end**, ahead of the client answering the open questions below (built on reasonable defaults per instruction — revisit once answered). Staff log in at `/login` (not linked from public nav). Live on Supabase project `megastar-law` (org `ishaanwalia`), schema in [supabase/schema.sql](supabase/schema.sql). Built: auth/login, dashboard overview, Leads & Clients (pipeline + detail + new-lead form), Matters (detail, status, notes timeline, new-matter form), Appointments (list + new form), and the public Contact form auto-creating a Website-sourced lead. Not yet built from the spec below: document upload/vault, reports, appointment email reminders.
+
 ## 1. Login & Access
 - Email + password login, restricted to firm staff only (no public sign-up).
 - Two roles to start: **Advocate** (full access) and **Staff** (can log leads/notes, can't delete records or see billing if added later).

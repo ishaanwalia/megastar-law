@@ -101,6 +101,8 @@ Public site built: Home, About, Practice Areas (index + 7 detail pages), Contact
 
 Contact page (heaviest page — form + sidebar): Performance 91, others 100.
 
+**Deployed**: pushed to [github.com/ishaanwalia/megastar-law](https://github.com/ishaanwalia/megastar-law) (master branch), imported into Vercel (team "walia", Hobby/free plan), live preview at the auto-generated `*.vercel.app` URL. Every push to `master` will now redeploy automatically. Custom domain not yet attached.
+
 **Lesson learned, applies to all future pages (including the CRM):** the initial homepage build wrapped every section — including the above-the-fold hero — in a Framer Motion `whileInView` scroll-reveal (`src/components/reveal.tsx`) that starts at `opacity: 0` and only becomes visible after JS hydrates and an IntersectionObserver fires. That dropped Performance to 84 by delaying the Largest Contentful Paint element (the hero text) by ~900ms waiting on client JS. Fixed by rendering above-the-fold hero content as plain static markup with no entrance animation, and reserving `Reveal` for content that's actually below the fold on first paint. Don't reintroduce scroll-reveal wrappers on hero/first-viewport content later.
 
 ## 8. Immediate Next Steps

@@ -47,7 +47,13 @@ export function ContactForm() {
       <FieldGroup>
         <Field>
           <FieldLabel htmlFor="name">Full name</FieldLabel>
-          <Input id="name" name="name" required autoComplete="name" />
+          <Input
+            id="name"
+            name="name"
+            required
+            autoComplete="name"
+            className="h-11"
+          />
           <FieldError>{state.fieldErrors?.name}</FieldError>
         </Field>
 
@@ -60,12 +66,19 @@ export function ContactForm() {
               type="tel"
               required
               autoComplete="tel"
+              className="h-11"
             />
             <FieldError>{state.fieldErrors?.phone}</FieldError>
           </Field>
           <Field>
             <FieldLabel htmlFor="email">Email (optional)</FieldLabel>
-            <Input id="email" name="email" type="email" autoComplete="email" />
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              autoComplete="email"
+              className="h-11"
+            />
             <FieldError>{state.fieldErrors?.email}</FieldError>
           </Field>
         </div>
@@ -77,7 +90,7 @@ export function ContactForm() {
           <select
             id="practiceArea"
             name="practiceArea"
-            className="h-9 w-full rounded-lg border border-input bg-transparent px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+            className="h-11 w-full rounded-lg border border-input bg-transparent px-3 text-base outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 md:text-sm"
             defaultValue=""
           >
             <option value="">Select one&hellip;</option>
@@ -99,7 +112,12 @@ export function ContactForm() {
           <p className="text-sm text-destructive">{state.message}</p>
         )}
 
-        <Button type="submit" disabled={pending} className="w-full sm:w-auto">
+        <Button
+          type="submit"
+          size="lg"
+          disabled={pending}
+          className="w-full sm:w-auto"
+        >
           {pending && <Loader2 className="size-4 animate-spin" />}
           Send Message
         </Button>
