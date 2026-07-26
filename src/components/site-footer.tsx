@@ -1,30 +1,64 @@
+import Image from "next/image";
 import Link from "next/link";
-import { Mail, Phone } from "lucide-react";
+import { ArrowRight, Mail, MessageCircle, Phone } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { firm, offices, practiceAreas } from "@/lib/firm-data";
 import { mainNav } from "@/lib/nav";
 
 export function SiteFooter() {
   return (
     <footer className="border-t border-border bg-secondary/40">
+      <div className="border-b border-border">
+        <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 px-4 py-10 sm:flex-row sm:items-center sm:px-6">
+          <div>
+            <p className="text-sm font-medium tracking-wide text-gold uppercase">
+              {firm.helplineLabel}
+            </p>
+            <a
+              href={`tel:${firm.helpline.replace(/\s/g, "")}`}
+              className="mt-1 flex items-center gap-2 font-heading text-2xl font-medium hover:text-gold"
+            >
+              <Phone className="size-5" /> {firm.helpline}
+            </a>
+          </div>
+          <Button render={<Link href="/contact" />} nativeButton={false}>
+            Book a Consultation <ArrowRight className="size-4" />
+          </Button>
+        </div>
+      </div>
+
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-4">
         <div>
-          <div className="font-heading text-lg font-medium">{firm.name}</div>
-          <p className="mt-2 text-sm text-muted-foreground">
+          <div className="flex items-center gap-2.5">
+            <Image
+              src="/brand/logo-mark.png"
+              alt=""
+              width={32}
+              height={30}
+              className="h-8 w-auto dark:invert"
+            />
+            <div className="font-heading text-lg font-medium">
+              {firm.name}
+            </div>
+          </div>
+          <p className="mt-3 text-sm text-muted-foreground">
             Personalized attention, settlement and courtroom experience,
             and a 24/7 legal helpline.
           </p>
           <div className="mt-4 flex flex-col gap-2 text-sm">
             <a
-              href={`tel:${firm.helpline.replace(/\s/g, "")}`}
-              className="flex items-center gap-2 hover:text-gold"
-            >
-              <Phone className="size-4" /> {firm.helpline} ({firm.helplineLabel})
-            </a>
-            <a
               href={`mailto:${firm.email}`}
               className="flex items-center gap-2 hover:text-gold"
             >
               <Mail className="size-4" /> {firm.email}
+            </a>
+            <a
+              href={`https://wa.me/${firm.whatsapp}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 hover:text-gold"
+            >
+              <MessageCircle className="size-4" /> WhatsApp the firm
             </a>
           </div>
         </div>

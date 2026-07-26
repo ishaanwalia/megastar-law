@@ -31,7 +31,11 @@ export function ContactForm() {
 
   if (state.status === "success") {
     return (
-      <div className="flex flex-col items-center gap-3 rounded-xl border border-border bg-card p-10 text-center">
+      <div
+        role="status"
+        aria-live="polite"
+        className="flex flex-col items-center gap-3 rounded-xl border border-border bg-card p-10 text-center"
+      >
         <CheckCircle2 className="size-8 text-gold" />
         <h3 className="font-heading text-xl font-medium">Message sent</h3>
         <p className="max-w-sm text-sm text-muted-foreground">
@@ -43,7 +47,7 @@ export function ContactForm() {
   }
 
   return (
-    <form ref={formRef} action={formAction} noValidate>
+    <form ref={formRef} action={formAction} noValidate aria-live="polite">
       <FieldGroup>
         <Field>
           <FieldLabel htmlFor="name">Full name</FieldLabel>

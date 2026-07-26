@@ -3,6 +3,7 @@ import { CheckCircle2 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Reveal } from "@/components/reveal";
+import { CtaBanner } from "@/components/cta-banner";
 import { advocates, offices } from "@/lib/firm-data";
 
 export const metadata: Metadata = {
@@ -67,9 +68,14 @@ export default function AboutPage() {
                       </div>
                     ) : (
                       <>
+                        {advocate.bio && (
+                          <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+                            {advocate.bio}
+                          </p>
+                        )}
                         <dl className="mt-4 grid gap-3 sm:grid-cols-2">
                           <div>
-                            <dt className="text-xs tracking-wide text-muted-foreground uppercase">
+                            <dt className="text-sm tracking-wide text-muted-foreground uppercase">
                               Enrollment
                             </dt>
                             <dd className="mt-0.5 text-sm">
@@ -77,7 +83,7 @@ export default function AboutPage() {
                             </dd>
                           </div>
                           <div>
-                            <dt className="text-xs tracking-wide text-muted-foreground uppercase">
+                            <dt className="text-sm tracking-wide text-muted-foreground uppercase">
                               Experience
                             </dt>
                             <dd className="mt-0.5 text-sm">
@@ -85,7 +91,7 @@ export default function AboutPage() {
                             </dd>
                           </div>
                           <div className="sm:col-span-2">
-                            <dt className="text-xs tracking-wide text-muted-foreground uppercase">
+                            <dt className="text-sm tracking-wide text-muted-foreground uppercase">
                               Bar Membership
                             </dt>
                             <dd className="mt-0.5 text-sm">
@@ -154,6 +160,11 @@ export default function AboutPage() {
           </Reveal>
         </div>
       </section>
+
+      <CtaBanner
+        title="Ready to discuss your matter?"
+        body="Speak directly with the advocate handling your case — no layers, no runaround."
+      />
     </>
   );
 }

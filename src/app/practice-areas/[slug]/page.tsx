@@ -5,7 +5,7 @@ import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Reveal } from "@/components/reveal";
-import { practiceAreas } from "@/lib/firm-data";
+import { firm, practiceAreas } from "@/lib/firm-data";
 
 export function generateStaticParams() {
   return practiceAreas.map((area) => ({ slug: area.slug }));
@@ -51,17 +51,30 @@ export default async function PracticeAreaPage({
         <p className="mt-6 text-lg text-muted-foreground">{area.summary}</p>
 
         <Reveal delay={0.1}>
-          <ul className="mt-10 grid gap-3 sm:grid-cols-2">
-            {area.highlights.map((h) => (
-              <li key={h} className="flex items-start gap-2.5 text-sm">
-                <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-gold" />
-                {h}
-              </li>
-            ))}
-          </ul>
+          <p className="mt-8 max-w-3xl text-base leading-relaxed text-muted-foreground">
+            {area.approach}
+          </p>
         </Reveal>
 
-        <Reveal delay={0.2}>
+        <div className="mt-12 flex flex-col gap-10">
+          {area.serviceGroups.map((group, gi) => (
+            <Reveal key={group.heading} delay={0.15 + gi * 0.08}>
+              <h2 className="font-heading text-xl font-medium">
+                {group.heading}
+              </h2>
+              <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+                {group.items.map((item) => (
+                  <li key={item} className="flex items-start gap-2.5 text-sm">
+                    <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-gold" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </Reveal>
+          ))}
+        </div>
+
+        <Reveal delay={0.4}>
           <div className="mt-12 rounded-xl border border-border bg-secondary/40 p-6">
             <h2 className="font-heading text-lg font-medium">
               Discuss your matter
@@ -70,13 +83,29 @@ export default async function PracticeAreaPage({
               Every matter is different — the fastest way to understand your
               options is a direct conversation.
             </p>
-            <Button
-              className="mt-4"
-              render={<Link href="/contact" />}
-              nativeButton={false}
-            >
-              Book a Consultation <ArrowRight className="size-4" />
-            </Button>
+            <div className="mt-4 flex flex-wrap gap-3">
+              <Button
+                render={<Link href="/contact" />}
+                nativeButton={false}
+              >
+                Book a Consultation <ArrowRight className="size-4" />
+              </Button>
+              <Button
+                variant="outline"
+                render={
+                  <a
+                    href={`https://wa.me/${firm.whatsapp}?text=${encodeURIComponent(
+                      `Hi, I'd like to discuss a ${area.title} matter.`
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  />
+                }
+                nativeButton={false}
+              >
+                Message on WhatsApp
+              </Button>
+            </div>
           </div>
         </Reveal>
       </section>

@@ -12,5 +12,7 @@ export const mainNav = [
       description: area.summary,
     })),
   },
+  { title: "Why Us", href: "/why-us" },
+  { title: "Insights", href: "/insights" },
   { title: "Contact", href: "/contact" },
 ];

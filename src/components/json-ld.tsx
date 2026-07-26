@@ -1,4 +1,4 @@
-import { firm, advocates } from "@/lib/firm-data";
+import { firm, advocates, practiceAreas } from "@/lib/firm-data";
 
 export function JsonLd() {
   const data = {
@@ -16,10 +16,12 @@ export function JsonLd() {
       addressCountry: "IN",
     },
     areaServed: "Chandigarh, Punjab & Haryana",
+    knowsAbout: practiceAreas.map((area) => area.title),
     founder: {
       "@type": "Person",
       name: advocates[0].fullName,
       jobTitle: advocates[0].role,
+      description: advocates[0].bio,
     },
   };
 

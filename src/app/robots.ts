@@ -5,6 +5,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
+      disallow: ["/dashboard", "/login"],
     },
     sitemap: "https://megastarlawassociates.com/sitemap.xml",
   };
