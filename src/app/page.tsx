@@ -78,25 +78,26 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Credential strip — the hero's supporting evidence, not its headline. */}
-      <section className="border-t border-border/60">
-        <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-          <dl className="grid grid-cols-2 gap-6 sm:grid-cols-4">
-            {stats.map((s) => (
-              <div key={s.label}>
-                <dt className="font-mono text-2xl font-medium tabular-nums">
-                  {s.value}
-                </dt>
-                <dd className="mt-1 text-xs text-muted-foreground">
-                  {s.label}
-                </dd>
-              </div>
-            ))}
-          </dl>
-        </div>
-      </section>
+      {/* Credential strip — floats over the hero's bottom edge as a row of
+          centered glass cards, rather than sitting left-aligned in its own
+          flat-background section. */}
+      <div className="relative z-10 mx-auto -mt-10 max-w-6xl px-4 sm:-mt-14 sm:px-6">
+        <dl className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
+          {stats.map((s) => (
+            <div
+              key={s.label}
+              className="flex flex-col items-center justify-center gap-1 rounded-2xl border border-gold/25 bg-card/60 px-4 py-6 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_16px_40px_-20px_rgba(0,0,0,0.45)] backdrop-blur-md dark:bg-card/30"
+            >
+              <dt className="font-mono text-2xl font-medium tabular-nums">
+                {s.value}
+              </dt>
+              <dd className="text-xs text-muted-foreground">{s.label}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
 
-      <section className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
+      <section className="mx-auto max-w-6xl px-4 pt-14 pb-20 sm:px-6">
         <Reveal>
           <div className="flex flex-wrap items-end justify-between gap-4">
             <h2 className="font-heading text-3xl font-medium tracking-tight">
@@ -133,13 +134,19 @@ export default function Home() {
         <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
           <Reveal>
             <div className="grid gap-12 md:grid-cols-2 md:items-start">
-              <blockquote className="border-l-2 border-gold pl-6">
-                <p className="font-heading text-2xl leading-snug font-medium tracking-tight">
+              <blockquote className="relative border-l-2 border-oxblood pl-6">
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute -top-8 left-2 font-heading text-8xl text-oxblood/15 select-none"
+                >
+                  &rdquo;
+                </span>
+                <p className="relative font-heading text-2xl leading-snug font-medium tracking-tight">
                   &ldquo;Clients deserve personalized attention and dedicated
                   care — not to be processed through a large firm&apos;s
                   assembly line.&rdquo;
                 </p>
-                <footer className="mt-4 text-sm text-muted-foreground">
+                <footer className="relative mt-4 text-sm text-muted-foreground">
                   {pradeep.name}, Founder
                 </footer>
               </blockquote>

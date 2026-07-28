@@ -14,6 +14,8 @@
   --color-gold-foreground: var(--gold-foreground);
   --color-ledger: var(--ledger);
   --color-ledger-foreground: var(--ledger-foreground);
+  --color-oxblood: var(--oxblood);
+  --color-oxblood-foreground: var(--oxblood-foreground);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -75,6 +77,8 @@
   --gold-foreground: oklch(0.18 0.02 50);
   --ledger: oklch(0.32 0.05 155);
   --ledger-foreground: oklch(0.98 0.008 85);
+  --oxblood: oklch(0.34 0.11 18);
+  --oxblood-foreground: oklch(0.97 0.01 85);
   --chart-1: oklch(0.68 0.12 75);
   --chart-2: oklch(0.556 0.02 50);
   --chart-3: oklch(0.439 0.02 50);
@@ -114,6 +118,8 @@
   --gold-foreground: oklch(0.18 0.02 50);
   --ledger: oklch(0.7 0.08 155);
   --ledger-foreground: oklch(0.18 0.02 50);
+  --oxblood: oklch(0.58 0.14 18);
+  --oxblood-foreground: oklch(0.18 0.02 50);
   --chart-1: oklch(0.75 0.13 78);
   --chart-2: oklch(0.7 0.02 75);
   --chart-3: oklch(0.556 0.02 50);
