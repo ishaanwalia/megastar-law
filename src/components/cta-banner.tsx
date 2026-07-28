@@ -13,7 +13,7 @@ export function CtaBanner({
 }) {
   return (
     <section className="border-t border-border bg-primary text-primary-foreground">
-      <div className="mx-auto max-w-6xl px-4 py-16 text-center sm:px-6">
+      <div className="mx-auto max-w-[1680px] px-4 py-16 text-center sm:px-6">
         <Reveal>
           <h2 className="gradient-text font-heading text-3xl font-medium tracking-tight motion-safe:animate-[gradient-shift_7s_ease-in-out_infinite]">
             {title}

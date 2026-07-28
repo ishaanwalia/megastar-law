@@ -60,7 +60,7 @@ const pillars = [
 export default function WhyUsPage() {
   return (
     <>
-      <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-24">
+      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-24">
         <p className="text-sm font-medium tracking-wide text-brand uppercase">
           Why Megastar
         </p>
@@ -76,7 +76,7 @@ export default function WhyUsPage() {
       </section>
 
       <section className="border-t border-border bg-secondary/40">
-        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-20">
+        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-20">
           <div className="grid gap-6 md:grid-cols-2">
             {pillars.map((p, i) => (
               <Reveal key={p.key} delay={(i % 2) * 0.1}>

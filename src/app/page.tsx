@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Clock, ShieldCheck, Scale, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -10,6 +11,9 @@ import { StatNumber } from "@/components/stat-number";
 import { GlassHeroBg } from "@/components/glass-hero-bg";
 import { StickyPracticeCards } from "@/components/sticky-practice-cards";
 import { Marquee } from "@/components/marquee";
+import { PinnedCredentials } from "@/components/pinned-credentials";
+import { OfficeMap } from "@/components/office-map";
+import { Magnetic } from "@/components/magnetic";
 import { firm, advocates, practiceAreas } from "@/lib/firm-data";
 
 
@@ -17,6 +21,35 @@ const heroPanelLinks = [
   { label: "Personalized", href: "/why-us" },
   { label: "Experienced", href: "/about" },
   { label: "Available 24/7", href: "/contact" },
+];
+
+// Forums Pradeep's enrolment and practice actually cover (PLAN.md section 0
+// — verified from the bar letter, not the network boilerplate).
+const credentials = [
+  {
+    label: "Punjab & Haryana High Court",
+    detail: "Member of the High Court Bar Association since 2011. Chamber 95.",
+  },
+  {
+    label: "District Courts, Chandigarh",
+    detail: "Member, DBA Chandigarh. Chamber 353-A, Sector 43.",
+  },
+  {
+    label: "NCLT Chandigarh",
+    detail: "Corporate insolvency and company-law matters.",
+  },
+  {
+    label: "Consumer Fora",
+    detail: "District and State Commission, Punjab.",
+  },
+  {
+    label: "RERA Punjab & Haryana",
+    detail: "Homebuyer and developer disputes under the RERA Act.",
+  },
+  {
+    label: "Permanent Lok Adalat",
+    detail: "Public-utility disputes and conciliated settlements.",
+  },
 ];
 
 const credentialTicker = [
@@ -83,33 +116,35 @@ export default function Home() {
       {/* -mt-18 pulls the section up under the sticky header (h-18) so the
           shader runs full-bleed behind the nav; pt-18 puts the content back. */}
       <section className="relative -mt-18 flex min-h-[100svh] flex-col overflow-hidden bg-background pt-18">
-        <GlassHeroBg imageSrc="/hero-marble.jpeg" />
+        <GlassHeroBg imageSrc="/hero-marble.webp" />
 
-        <div className="relative z-10 mx-auto w-full max-w-6xl px-4 pt-14 sm:px-6 md:pt-20">
+        <div className="relative z-10 mx-auto w-full max-w-7xl px-5 pt-[clamp(1.75rem,6svh,5rem)] sm:px-8 lg:px-14">
           <p className="text-xs font-medium tracking-[0.25em] text-brand uppercase">
             Advocates &middot; Chandigarh
           </p>
-          <h1 className="mt-5 max-w-4xl font-heading text-4xl leading-[1.02] font-medium tracking-tight text-balance sm:text-6xl md:text-7xl">
+          <h1 className="mt-[clamp(0.75rem,2.2svh,1.25rem)] max-w-4xl font-heading text-[clamp(2.25rem,5.2svh+1.5vw,4.5rem)] leading-[1.02] font-medium tracking-tight text-balance">
             Clear counsel.{" "}
             <em className="gradient-text-ink font-normal italic motion-safe:animate-[gradient-shift_7s_ease-in-out_infinite]">
               Committed representation.
             </em>
           </h1>
-          <p className="mt-6 max-w-lg text-base leading-relaxed text-muted-foreground md:text-lg">
+          <p className="mt-[clamp(0.85rem,2.4svh,1.5rem)] max-w-lg text-base leading-relaxed text-muted-foreground md:text-lg">
             Megastar Law Associates prioritizes quality over quantity —
             personalized attention and dedicated care for every client, across
             criminal, civil, family, corporate and arbitration matters.
           </p>
-          <div className="mt-8 flex flex-wrap items-center gap-4">
-            <Button
-              size="lg"
-              render={<Link href="/contact" />}
-              nativeButton={false}
-              className="btn-sheen bg-primary text-primary-foreground hover:bg-primary/90"
-            >
-              Speak With an Advocate Today
-              <ArrowRight className="size-4" />
-            </Button>
+          <div className="mt-[clamp(1.1rem,3svh,1.75rem)] flex flex-wrap items-center gap-4">
+            <Magnetic>
+              <Button
+                size="lg"
+                render={<Link href="/contact" />}
+                nativeButton={false}
+                className="btn-sheen bg-primary text-primary-foreground hover:bg-primary/90"
+              >
+                Speak With an Advocate Today
+                <ArrowRight className="size-4" />
+              </Button>
+            </Magnetic>
             <a
               href={`tel:${firm.helpline.replace(/\s/g, "")}`}
               className="flex items-center gap-2 text-sm font-medium transition-colors hover:text-brand"
@@ -122,9 +157,9 @@ export default function Home() {
 
         {/* Glass panel anchored to the bottom edge of the first viewport —
             flush, no bottom border, so it reads as the floor of the hero. */}
-        <div className="relative z-10 mx-auto mt-auto w-full max-w-5xl px-4 pt-10 sm:px-6 sm:pt-16">
-          <div className="border border-b-0 border-border/70 bg-card/80 px-4 pt-6 pb-0 shadow-sm backdrop-blur-md sm:px-8 sm:pt-10 md:px-10 md:pt-12">
-            <div className="grid gap-6 md:grid-cols-2 md:gap-14">
+        <div className="relative z-10 mx-auto mt-auto w-full max-w-5xl px-5 pt-[clamp(1.25rem,4svh,4rem)] sm:px-8 lg:px-14">
+          <div className="border border-b-0 border-border/70 bg-card/80 px-4 pt-[clamp(1.25rem,3.4svh,3rem)] pb-0 shadow-sm backdrop-blur-md sm:px-8 md:px-10">
+            <div className="grid gap-[clamp(1rem,2.4svh,1.5rem)] md:grid-cols-2 md:gap-14">
               <div>
                 <p className="text-[11px] font-medium tracking-[0.2em] text-muted-foreground uppercase">
                   What do we do?
@@ -141,7 +176,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="mt-5 h-px w-full bg-border sm:mt-8 md:mt-10" />
+            <div className="mt-[clamp(1rem,3svh,2.5rem)] h-px w-full bg-border" />
 
             {/* Three across at every width — stacking these on mobile pushed
                 the panel a full 250px past the fold. */}
@@ -175,7 +210,7 @@ export default function Home() {
 
       {/* Credential strip — centered glass cards, sitting in normal flow
           right after the marquee. */}
-      <div className="relative z-10 mx-auto max-w-6xl px-4 pt-10 sm:px-6">
+      <div className="relative z-10 mx-auto max-w-7xl px-4 pt-10 sm:px-6">
         <dl className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
           {stats.map((s) => (
             <div
@@ -195,7 +230,7 @@ export default function Home() {
         </dl>
       </div>
 
-      <section className="mx-auto max-w-6xl px-4 pt-14 pb-20 sm:px-6">
+      <section className="mx-auto max-w-7xl px-4 pt-14 pb-20 sm:px-6">
         <Reveal>
           <div className="flex flex-wrap items-end justify-between gap-4">
             <h2 className="font-heading text-3xl font-medium tracking-tight">
@@ -209,14 +244,34 @@ export default function Home() {
             </Link>
           </div>
         </Reveal>
-        <div className="mt-10">
+        {/* The plate NOT used in the hero, mirrored so the sculpture faces
+            into the page instead of off the left edge, pinned beside the deck. */}
+        <div className="mt-10 lg:grid lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] lg:gap-12">
+          <div className="hidden lg:block">
+            <div className="sticky top-[18vh] overflow-hidden rounded-3xl border border-border bg-secondary/30">
+              <Image
+                src="/hero-glass.webp"
+                alt=""
+                width={880}
+                height={492}
+                sizes="26rem"
+                className="h-[62vh] w-full scale-x-[-1] object-cover object-left"
+              />
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-background/30"
+              />
+            </div>
+          </div>
           <StickyPracticeCards areas={practiceAreas} />
         </div>
       </section>
 
+      <PinnedCredentials heading="Where the firm appears" items={credentials} />
+
       {/* Why Megastar — a voice and a list, not a third round of icon cards. */}
       <section className="border-t border-border bg-secondary/40">
-        <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
+        <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
           <Reveal>
             <div className="grid gap-12 md:grid-cols-2 md:items-start">
               <blockquote className="relative border-l-2 border-slate pl-6">
@@ -257,7 +312,7 @@ export default function Home() {
       </section>
 
       <section className="border-t border-border">
-        <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
+        <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
           <Reveal>
             <div className="grid gap-10 md:grid-cols-[auto_1fr_auto] md:items-center">
               <PhotoPlaceholder
@@ -303,7 +358,7 @@ export default function Home() {
 
       {/* Results — pending real client testimonials; never fabricate these. */}
       <section className="border-t border-border">
-        <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
+        <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
           <Reveal>
             <h2 className="font-heading text-3xl font-medium tracking-tight">
               What clients say
@@ -319,6 +374,8 @@ export default function Home() {
           </Reveal>
         </div>
       </section>
+
+      <OfficeMap />
 
       <FaqSection />
 

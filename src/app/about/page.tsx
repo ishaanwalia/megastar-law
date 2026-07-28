@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <>
-      <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-24">
+      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-24">
         <p className="text-sm font-medium tracking-wide text-brand uppercase">
           About the firm
         </p>
@@ -32,7 +32,7 @@ export default function AboutPage() {
       </section>
 
       <section className="border-t border-border bg-secondary/40">
-        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-20">
+        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-20">
           <div className="flex flex-col gap-16">
             {advocates.map((advocate, i) => (
               <Reveal key={advocate.name} delay={i * 0.1}>
@@ -108,7 +108,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-20">
+      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-20">
         <Reveal>
           <h2 className="font-heading text-2xl font-medium tracking-tight">
             Why clients work with us
@@ -130,7 +130,7 @@ export default function AboutPage() {
       </section>
 
       <section className="border-t border-border bg-secondary/40">
-        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
           <Reveal>
             <h2 className="font-heading text-2xl font-medium tracking-tight">
               Chandigarh Chambers

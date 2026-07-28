@@ -247,6 +247,14 @@ body::before {
     background-clip: text;
     -webkit-background-clip: text;
     color: transparent;
+    /* background-clip:text clips to the inline box, which chops the overhang
+       off italic terminals (the trailing "d"). Pad the box out, pull the
+       layout back with an equal negative margin. */
+    display: inline-block;
+    padding-inline: 0.08em;
+    margin-inline: -0.08em;
+    padding-block: 0.04em;
+    margin-block: -0.04em;
   }
 
   /* Same shimmer for headings on LIGHT ground. The light-teal midpoint that
@@ -265,6 +273,14 @@ body::before {
     background-clip: text;
     -webkit-background-clip: text;
     color: transparent;
+    /* background-clip:text clips to the inline box, which chops the overhang
+       off italic terminals (the trailing "d"). Pad the box out, pull the
+       layout back with an equal negative margin. */
+    display: inline-block;
+    padding-inline: 0.08em;
+    margin-inline: -0.08em;
+    padding-block: 0.04em;
+    margin-block: -0.04em;
   }
 }
 

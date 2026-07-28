@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 export default function PracticeAreasPage() {
   return (
     <>
-      <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-24">
+      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-24">
         <p className="text-sm font-medium tracking-wide text-brand uppercase">
           What we do
         </p>

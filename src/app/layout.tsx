@@ -13,6 +13,10 @@ const FloatingWidgets = dynamic(() =>
   import("@/components/floating-widgets").then((m) => m.FloatingWidgets)
 );
 
+const CommandPalette = dynamic(() =>
+  import("@/components/command-palette").then((m) => m.CommandPalette)
+);
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -83,6 +87,7 @@ export default function RootLayout({
         <main className="flex-1">{children}</main>
         <SiteFooter />
         <FloatingWidgets />
+        <CommandPalette />
         <Analytics />
       </body>
     </html>

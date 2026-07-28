@@ -6,6 +6,7 @@ import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Reveal } from "@/components/reveal";
+import { ReadingRail } from "@/components/reading-rail";
 import { firm, practiceAreas } from "@/lib/firm-data";
 
 export function generateStaticParams() {
@@ -39,6 +40,7 @@ export default async function PracticeAreaPage({
 
   return (
     <>
+      <ReadingRail />
       <section className="mx-auto max-w-4xl px-4 py-16 sm:px-6 md:py-24">
         <Link
           href="/practice-areas"
@@ -56,7 +58,7 @@ export default async function PracticeAreaPage({
             rather than seven unrelated stock photos. */}
         <div className="relative mt-8 aspect-[3/2] overflow-hidden rounded-2xl border border-border sm:mt-10 sm:aspect-[21/9]">
           <Image
-            src={`/practice/${area.slug}.jpg`}
+            src={`/practice/${area.slug}.webp`}
             alt=""
             fill
             sizes="(max-width: 896px) 100vw, 896px"

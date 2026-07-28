@@ -39,7 +39,7 @@ export function FloatingWidgets() {
           aria-label="Cookie notice"
           className="pointer-events-auto w-full rounded-xl border border-border bg-card/95 p-4 shadow-lg backdrop-blur-sm sm:p-5"
         >
-          <div className="mx-auto flex max-w-6xl flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="mx-auto flex max-w-[1680px] flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="max-w-2xl text-sm text-muted-foreground">
               This site uses privacy-friendly, cookieless analytics to
               understand how pages are used. No personal data is sold or
