@@ -9,7 +9,19 @@ import { PhotoPlaceholder } from "@/components/photo-placeholder";
 import { FaqSection } from "@/components/faq-section";
 import { Spotlight } from "@/components/spotlight";
 import { StatNumber } from "@/components/stat-number";
+import { HeroShader } from "@/components/hero-shader";
+import { ParallaxFloat } from "@/components/parallax-float";
+import { Marquee } from "@/components/marquee";
 import { firm, advocates, practiceAreas } from "@/lib/firm-data";
+
+const credentialTicker = [
+  "Punjab & Haryana High Court",
+  "District Courts, Chandigarh",
+  "NRI Section 498A Specialists",
+  "15+ Years, Civil & Criminal",
+  "24/7 Legal Helpline",
+  "Enrolled 2011, P-2435/2011",
+];
 
 const pradeep = advocates[0];
 
@@ -59,16 +71,11 @@ const values = [
 export default function Home() {
   return (
     <>
-      {/* Hero — dark ground so the gold/oxblood/ledger palette actually reads.
-          The ambient aurora layer is decorative and compositor-only
-          (transform-only keyframes); the H1/subhead themselves still have
-          zero animation, so LCP paint is untouched. */}
-      <section className="relative overflow-hidden bg-primary text-primary-foreground">
-        <div aria-hidden className="pointer-events-none absolute inset-0">
-          <div className="absolute -top-32 -left-24 size-[34rem] rounded-full bg-gold/25 blur-3xl motion-safe:animate-[aurora-drift-a_22s_ease-in-out_infinite]" />
-          <div className="absolute top-1/4 -right-24 size-[28rem] rounded-full bg-oxblood/30 blur-3xl motion-safe:animate-[aurora-drift-b_26s_ease-in-out_infinite]" />
-          <div className="absolute -bottom-24 left-1/3 size-[24rem] rounded-full bg-ledger/25 blur-3xl motion-safe:animate-[aurora-drift-a_30s_ease-in-out_infinite]" />
-        </div>
+      {/* Hero — stays on the site's own day-theme ground. The shader is a
+          pale, mostly-parchment marbled wash (not a dark backdrop); the
+          H1/subhead have zero animation, so LCP paint is untouched. */}
+      <section className="relative overflow-hidden bg-background">
+        <HeroShader className="opacity-90" />
 
         <div className="relative z-10 mx-auto grid max-w-6xl gap-10 px-4 py-20 sm:px-6 md:grid-cols-2 md:py-28">
           <div>
@@ -78,7 +85,7 @@ export default function Home() {
             <h1 className="mt-4 font-heading text-4xl leading-[1.05] font-medium tracking-tight sm:text-5xl md:text-6xl">
               Clear counsel. Committed representation.
             </h1>
-            <p className="mt-6 max-w-lg text-lg text-primary-foreground/70">
+            <p className="mt-6 max-w-lg text-lg text-muted-foreground">
               Megastar Law Associates prioritizes quality over quantity —
               personalized attention and dedicated care for every client,
               across criminal, civil, family, corporate and arbitration
@@ -104,11 +111,13 @@ export default function Home() {
             </div>
           </div>
 
-          <PhotoPlaceholder
-            label={`Photo needed: ${pradeep.name}`}
-            hint="Professional headshot or a Punjab & Haryana High Court exterior shot — the first thing a visitor sees."
-            className="w-full from-primary via-oxblood/50 to-gold/50"
-          />
+          <ParallaxFloat distance={40}>
+            <PhotoPlaceholder
+              label={`Photo needed: ${pradeep.name}`}
+              hint="Professional headshot or a Punjab & Haryana High Court exterior shot — the first thing a visitor sees."
+              className="w-full from-primary via-oxblood/50 to-gold/50"
+            />
+          </ParallaxFloat>
         </div>
       </section>
 
@@ -120,7 +129,7 @@ export default function Home() {
           {stats.map((s) => (
             <div
               key={s.label}
-              className={`flex flex-col items-center justify-center gap-1 rounded-2xl border border-t-2 border-gold/25 ${accentClasses[s.accent]} bg-card/60 px-4 py-6 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_16px_40px_-20px_rgba(0,0,0,0.45)] backdrop-blur-md dark:bg-card/30`}
+              className={`flex flex-col items-center justify-center gap-1 rounded-2xl border border-t-2 border-gold/25 ${accentClasses[s.accent]} bg-card/70 px-4 py-6 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.6),0_16px_40px_-20px_rgba(0,0,0,0.2)] backdrop-blur-md`}
             >
               <dt className="font-mono text-2xl font-medium tabular-nums">
                 {"value" in s ? (
@@ -134,6 +143,8 @@ export default function Home() {
           ))}
         </dl>
       </div>
+
+      <Marquee items={credentialTicker} className="border-y border-border/60 py-4" />
 
       <section className="mx-auto max-w-6xl px-4 pt-14 pb-20 sm:px-6">
         <Reveal>

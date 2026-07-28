@@ -177,23 +177,12 @@ body::before {
   }
 }
 
-@keyframes aurora-drift-a {
-  0%,
-  100% {
-    transform: translate(-8%, -8%) scale(1);
+@keyframes marquee-scroll {
+  from {
+    transform: translateX(0);
   }
-  50% {
-    transform: translate(10%, 6%) scale(1.15);
-  }
-}
-
-@keyframes aurora-drift-b {
-  0%,
-  100% {
-    transform: translate(6%, 10%) scale(1.1);
-  }
-  50% {
-    transform: translate(-10%, -6%) scale(0.95);
+  to {
+    transform: translateX(-50%);
   }
 }
 
