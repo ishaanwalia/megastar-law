@@ -31,7 +31,16 @@ export function ReadingRail({ scope = "main" }: { scope?: string }) {
         (h.textContent || "").trim()
       );
       heads.forEach((h, i) => {
-        if (!h.id) h.id = `section-${i}`;
+        // Slug from the heading text, not the index: positional ids break every
+        // existing deep link the moment a section is added or reordered.
+        if (!h.id) {
+          const slug = (h.textContent || "")
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/^-|-$/g, "")
+            .slice(0, 40);
+          h.id = slug || `section-${i}`;
+        }
         h.style.scrollMarginTop = `${HEADER_OFFSET}px`;
       });
       setSections(

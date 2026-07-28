@@ -164,7 +164,7 @@ export function SiteFooter() {
         <div className="mx-auto flex max-w-[1680px] flex-col gap-3 px-5 py-6 text-xs text-[#F8F5F0]/45 sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-14">
           <span>
             &copy; {new Date().getFullYear()} {firm.name}. All rights reserved.{" "}
-            Interface effects by{" "}
+            Number animation adapted from{" "}
             <a
               href="https://skiper-ui.com"
               target="_blank"
@@ -172,15 +172,6 @@ export function SiteFooter() {
               className="hover:text-brand"
             >
               Skiper UI
-            </a>{" "}
-            &amp;{" "}
-            <a
-              href="https://www.originkit.dev"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-brand"
-            >
-              Originkit
             </a>
             .
           </span>

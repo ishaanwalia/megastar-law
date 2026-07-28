@@ -68,8 +68,12 @@ export async function submitContactForm(
     const resend = new Resend(process.env.RESEND_API_KEY);
     try {
       await resend.emails.send({
-        from: "Megastar Law Website <onboarding@resend.dev>",
-        to: firm.email,
+        // Sandbox senders only deliver to the Resend account owner, so this must be
+        // an address on a domain verified in Resend before launch.
+        from:
+          process.env.CONTACT_FROM ??
+          "Megastar Law Website <onboarding@resend.dev>",
+        to: process.env.CONTACT_TO ?? firm.email,
         replyTo: email || undefined,
         subject: `New consultation request — ${name}`,
         react: ContactNotificationEmail({
@@ -88,15 +92,19 @@ export async function submitContactForm(
       };
     }
   } else {
-    // No RESEND_API_KEY configured yet — log locally so submissions aren't
-    // silently lost during development. Wire up a real key before launch.
-    console.log("[contact form submission — no RESEND_API_KEY set]", {
-      name,
-      phone,
-      email,
-      practiceArea,
-      message,
-    });
+    // No RESEND_API_KEY: do NOT report success, or the visitor believes the
+    // firm has their enquiry when nothing was sent.
+    console.error(
+      "[contact] RESEND_API_KEY missing - enquiry not delivered",
+      { name, phone, email, practiceArea }
+    );
+    return {
+      status: "error",
+      message:
+        "Our contact form is not accepting messages right now - please call the 24/7 helpline on " +
+        firm.helpline +
+        ".",
+    };
   }
 
   return { status: "success" };

@@ -157,6 +157,7 @@ export function GlassHeroBg({ className }: { className?: string }) {
     ).matches;
 
     let raf = 0;
+    let onScreen = true;
     const eased = { x: 0.5, y: 0.55 };
     let pointer: { x: number; y: number } | null = null;
 
@@ -192,11 +193,23 @@ export function GlassHeroBg({ className }: { className?: string }) {
       gl!.uniform1f(timeLoc, t);
       gl!.uniform2f(mouseLoc, eased.x, eased.y);
       gl!.drawArrays(gl!.TRIANGLE_STRIP, 0, 4);
-      if (!reduceMotion) raf = requestAnimationFrame(draw);
+      if (!reduceMotion && onScreen) raf = requestAnimationFrame(draw);
     }
 
     resize();
     draw(0);
+
+    // Scrolled past the hero the canvas is invisible but still burning a full
+    // 60fps of GPU. Park it, and restart the loop on the way back up.
+    const vis = new IntersectionObserver(
+      ([entry]) => {
+        const wasOn = onScreen;
+        onScreen = entry.isIntersecting;
+        if (onScreen && !wasOn && !reduceMotion) raf = requestAnimationFrame(draw);
+      },
+      { rootMargin: "120px" }
+    );
+    vis.observe(canvas);
 
     const ro =
       typeof ResizeObserver !== "undefined" ? new ResizeObserver(resize) : null;
@@ -205,6 +218,7 @@ export function GlassHeroBg({ className }: { className?: string }) {
 
     return () => {
       cancelAnimationFrame(raf);
+      vis.disconnect();
       window.removeEventListener("pointermove", onPointerMove);
       if (ro) ro.disconnect();
       else window.removeEventListener("resize", resize);

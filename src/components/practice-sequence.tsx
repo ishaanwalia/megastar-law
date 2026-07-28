@@ -91,7 +91,7 @@ function DeckCard({
             <Icon className="size-5 sm:size-6" />
           </div>
         </div>
-        <span className="font-mono text-xs tracking-[0.25em] text-brand tabular-nums">
+        <span className="font-mono text-xs text-brand tabular-nums">
           {String(i + 1).padStart(2, "0")}
         </span>
       </div>

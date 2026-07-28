@@ -57,11 +57,10 @@ export default async function PracticeAreaPage({
         <div className="relative mt-8 aspect-[3/2] overflow-hidden rounded-2xl border border-border sm:mt-10 sm:aspect-[21/9]">
           <Image
             src={`/practice/${area.slug}.webp`}
-            alt=""
+            alt={`${area.title} — Megastar Law Associates, Chandigarh`}
             fill
             sizes="(max-width: 896px) 100vw, 896px"
             className="photo-duotone object-cover"
-            priority
           />
           <div
             aria-hidden
