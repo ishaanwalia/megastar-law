@@ -7,30 +7,50 @@ import { Reveal } from "@/components/reveal";
 import { CtaBanner } from "@/components/cta-banner";
 import { PhotoPlaceholder } from "@/components/photo-placeholder";
 import { FaqSection } from "@/components/faq-section";
+import { Spotlight } from "@/components/spotlight";
+import { StatNumber } from "@/components/stat-number";
 import { firm, advocates, practiceAreas } from "@/lib/firm-data";
 
 const pradeep = advocates[0];
 
-const stats = [
-  { value: "15+", label: "Years practicing, civil & criminal" },
-  { value: "2011", label: "Enrolled, Punjab & Haryana Bar" },
-  { value: "7", label: "Practice areas covered" },
-  { value: "24/7", label: "Legal helpline" },
+const accentClasses = {
+  gold: "border-t-gold",
+  ledger: "border-t-ledger",
+  oxblood: "border-t-oxblood",
+} as const;
+
+type Stat =
+  | {
+      value: number;
+      suffix?: string;
+      label: string;
+      accent: keyof typeof accentClasses;
+    }
+  | { display: string; label: string; accent: keyof typeof accentClasses };
+
+const stats: Stat[] = [
+  { value: 15, suffix: "+", label: "Years practicing, civil & criminal", accent: "gold" },
+  { value: 2011, label: "Enrolled, Punjab & Haryana Bar", accent: "ledger" },
+  { value: 7, label: "Practice areas covered", accent: "oxblood" },
+  { display: "24/7", label: "Legal helpline", accent: "gold" },
 ];
 
 const values = [
   {
     icon: ShieldCheck,
+    color: "text-gold",
     title: "Personalized Attention",
     body: "Every case is handled with focus on your specific concerns, not run through an assembly line of associates.",
   },
   {
     icon: Scale,
+    color: "text-oxblood",
     title: "Settlement & Courtroom Experience",
     body: "Solutions weighed on their merits — negotiated settlements where they serve you, full courtroom representation where they don't.",
   },
   {
     icon: Clock,
+    color: "text-ledger",
     title: "24/7 Legal Helpline",
     body: "Legal issues don't wait for office hours. Reach the firm directly, any time, at " + firm.helpline + ".",
   },
@@ -39,9 +59,18 @@ const values = [
 export default function Home() {
   return (
     <>
-      {/* Hero — intentionally has no scroll animation; it's the LCP element. */}
-      <section className="relative overflow-hidden">
-        <div className="mx-auto grid max-w-6xl gap-10 px-4 py-20 sm:px-6 md:grid-cols-2 md:py-28">
+      {/* Hero — dark ground so the gold/oxblood/ledger palette actually reads.
+          The ambient aurora layer is decorative and compositor-only
+          (transform-only keyframes); the H1/subhead themselves still have
+          zero animation, so LCP paint is untouched. */}
+      <section className="relative overflow-hidden bg-primary text-primary-foreground">
+        <div aria-hidden className="pointer-events-none absolute inset-0">
+          <div className="absolute -top-32 -left-24 size-[34rem] rounded-full bg-gold/25 blur-3xl motion-safe:animate-[aurora-drift-a_22s_ease-in-out_infinite]" />
+          <div className="absolute top-1/4 -right-24 size-[28rem] rounded-full bg-oxblood/30 blur-3xl motion-safe:animate-[aurora-drift-b_26s_ease-in-out_infinite]" />
+          <div className="absolute -bottom-24 left-1/3 size-[24rem] rounded-full bg-ledger/25 blur-3xl motion-safe:animate-[aurora-drift-a_30s_ease-in-out_infinite]" />
+        </div>
+
+        <div className="relative z-10 mx-auto grid max-w-6xl gap-10 px-4 py-20 sm:px-6 md:grid-cols-2 md:py-28">
           <div>
             <p className="text-sm font-medium tracking-wide text-gold uppercase">
               Advocates &middot; Chandigarh
@@ -49,14 +78,19 @@ export default function Home() {
             <h1 className="mt-4 font-heading text-4xl leading-[1.05] font-medium tracking-tight sm:text-5xl md:text-6xl">
               Clear counsel. Committed representation.
             </h1>
-            <p className="mt-6 max-w-lg text-lg text-muted-foreground">
+            <p className="mt-6 max-w-lg text-lg text-primary-foreground/70">
               Megastar Law Associates prioritizes quality over quantity —
               personalized attention and dedicated care for every client,
               across criminal, civil, family, corporate and arbitration
               matters.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-4">
-              <Button size="lg" render={<Link href="/contact" />} nativeButton={false}>
+              <Button
+                size="lg"
+                render={<Link href="/contact" />}
+                nativeButton={false}
+                className="btn-sheen bg-gold text-gold-foreground hover:bg-gold/90"
+              >
                 Speak With an Advocate Today
                 <ArrowRight className="size-4" />
               </Button>
@@ -73,7 +107,7 @@ export default function Home() {
           <PhotoPlaceholder
             label={`Photo needed: ${pradeep.name}`}
             hint="Professional headshot or a Punjab & Haryana High Court exterior shot — the first thing a visitor sees."
-            className="w-full"
+            className="w-full from-primary via-oxblood/50 to-gold/50"
           />
         </div>
       </section>
@@ -86,10 +120,14 @@ export default function Home() {
           {stats.map((s) => (
             <div
               key={s.label}
-              className="flex flex-col items-center justify-center gap-1 rounded-2xl border border-gold/25 bg-card/60 px-4 py-6 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_16px_40px_-20px_rgba(0,0,0,0.45)] backdrop-blur-md dark:bg-card/30"
+              className={`flex flex-col items-center justify-center gap-1 rounded-2xl border border-t-2 border-gold/25 ${accentClasses[s.accent]} bg-card/60 px-4 py-6 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_16px_40px_-20px_rgba(0,0,0,0.45)] backdrop-blur-md dark:bg-card/30`}
             >
               <dt className="font-mono text-2xl font-medium tabular-nums">
-                {s.value}
+                {"value" in s ? (
+                  <StatNumber value={s.value} suffix={s.suffix} />
+                ) : (
+                  s.display
+                )}
               </dt>
               <dd className="text-xs text-muted-foreground">{s.label}</dd>
             </div>
@@ -114,16 +152,18 @@ export default function Home() {
         <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {practiceAreas.map((area, i) => (
             <Reveal key={area.slug} delay={(i % 3) * 0.08}>
-              <Link href={`/practice-areas/${area.slug}`} className="block h-full">
-                <Card className="h-full p-6 transition-colors hover:border-gold/50">
-                  <h3 className="font-heading text-lg font-medium">
-                    {area.title}
-                  </h3>
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    {area.summary}
-                  </p>
-                </Card>
-              </Link>
+              <Spotlight className="h-full rounded-xl">
+                <Link href={`/practice-areas/${area.slug}`} className="block h-full">
+                  <Card className="h-full p-6 transition-colors hover:border-gold/50">
+                    <h3 className="font-heading text-lg font-medium">
+                      {area.title}
+                    </h3>
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      {area.summary}
+                    </p>
+                  </Card>
+                </Link>
+              </Spotlight>
             </Reveal>
           ))}
         </div>
@@ -154,7 +194,7 @@ export default function Home() {
               <ul className="flex flex-col gap-6">
                 {values.map((v) => (
                   <li key={v.title} className="flex gap-4">
-                    <v.icon className="mt-0.5 size-5 shrink-0 text-gold" />
+                    <v.icon className={`mt-0.5 size-5 shrink-0 ${v.color}`} />
                     <div>
                       <h3 className="font-heading text-base font-medium">
                         {v.title}

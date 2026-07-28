@@ -55,7 +55,7 @@ export function SiteHeader() {
                 <Link
                   href={item.href}
                   className={cn(
-                    "rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-muted",
+                    "nav-link rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-muted",
                     pathname.startsWith(item.href) && "text-gold"
                   )}
                 >
@@ -85,7 +85,7 @@ export function SiteHeader() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-muted",
+                  "nav-link rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-muted",
                   pathname === item.href && "text-gold"
                 )}
               >

@@ -27,6 +27,7 @@ export function CtaBanner({
               variant="secondary"
               render={<Link href="/contact" />}
               nativeButton={false}
+              className="btn-sheen"
             >
               Contact the Firm <ArrowRight className="size-4" />
             </Button>

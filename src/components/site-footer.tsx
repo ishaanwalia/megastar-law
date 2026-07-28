@@ -21,7 +21,11 @@ export function SiteFooter() {
               <Phone className="size-5" /> {firm.helpline}
             </a>
           </div>
-          <Button render={<Link href="/contact" />} nativeButton={false}>
+          <Button
+            render={<Link href="/contact" />}
+            nativeButton={false}
+            className="btn-sheen"
+          >
             Get a Call Back <ArrowRight className="size-4" />
           </Button>
         </div>
@@ -109,6 +113,16 @@ export function SiteFooter() {
         <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <span>
             &copy; {new Date().getFullYear()} {firm.name}. All rights reserved.
+            {" "}Interface effects by{" "}
+            <a
+              href="https://skiper-ui.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-gold"
+            >
+              Skiper UI
+            </a>
+            .
           </span>
           <div className="flex gap-4">
             <Link href="/disclaimer" className="hover:text-gold">
