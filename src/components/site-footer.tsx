@@ -122,6 +122,15 @@ export function SiteFooter() {
             >
               Skiper UI
             </a>
+            {" "}&amp;{" "}
+            <a
+              href="https://www.originkit.dev"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-gold"
+            >
+              Originkit
+            </a>
             .
           </span>
           <div className="flex gap-4">

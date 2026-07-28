@@ -227,6 +227,26 @@ body::before {
   .btn-sheen:hover::after {
     transform: translateX(120%);
   }
+
+  .gradient-text {
+    background-image: linear-gradient(
+      90deg,
+      var(--gold),
+      var(--oxblood) 35%,
+      var(--ledger) 65%,
+      var(--gold) 100%
+    );
+    background-size: 300% auto;
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+  }
+}
+
+@keyframes gradient-shift {
+  to {
+    background-position: -300% center;
+  }
 }
 
 @layer utilities {
