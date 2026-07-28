@@ -68,15 +68,17 @@ function DeckCard({
   const start = i * step;
   const end = start + step * 0.9;
 
-  // Earlier cards settle higher and slightly smaller, so the finished deck
-  // shows every card's top edge above the front one.
-  const behind = total - 1 - i;
-  const restY = -behind * 13;
-  const restScale = 1 - behind * 0.018;
+  // Skiper's stacking model: a card arrives at full size, then keeps shrinking
+  // for the rest of the phase as later cards land on top of it. That is what
+  // compresses the deck into a spine — fixed rest offsets just look like a
+  // pile. Each card also holds a small vertical offset so its top edge stays
+  // visible above the one in front.
+  const targetScale = Math.max(0.62, 1 - (total - 1 - i) * 0.055);
+  const restY = -(total - 1 - i) * 14;
 
-  const y = useTransform(progress, [start, end], [restY + 420, restY]);
-  const scale = useTransform(progress, [start, end], [restScale, restScale]);
-  const opacity = useTransform(progress, [start, start + step * 0.35], [0, 1]);
+  const y = useTransform(progress, [start, end], [restY + 460, restY]);
+  const scale = useTransform(progress, [start, CARDS_END], [1, targetScale]);
+  const opacity = useTransform(progress, [start, start + step * 0.3], [0, 1]);
 
   return (
     <motion.article
@@ -231,9 +233,8 @@ export function PracticeSequence({
             {/* Phase 0 — the plate. No card, no border: on mobile it sits
                 behind everything, on desktop it holds the left column. */}
             <Justitia
-              src="/hero-marble-crop.webp"
+              src="/hero-marble-flat.webp"
               sizes="(max-width: 1024px) 80vw, 20rem"
-              brightness={1.02}
               className="inset-0 lg:inset-auto lg:top-0 lg:bottom-0 lg:left-0 lg:w-80"
               imageClassName="object-contain object-bottom opacity-45 lg:opacity-100"
             />

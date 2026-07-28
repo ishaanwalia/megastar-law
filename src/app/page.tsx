@@ -119,10 +119,10 @@ export default function Home() {
         {/* Above the shader, never sampled into it. Runs from under the header
             down to where the panel starts, hugging the right edge. */}
         <Justitia
-          src="/hero-glass-crop.webp"
+          src="/hero-glass-flat.webp"
           priority
-          sizes="(max-width: 640px) 62vw, 40vw"
-          className="inset-y-0 right-0 w-[80vw] sm:w-[46vw] lg:right-[3%] lg:w-[40vw]"
+          sizes="(max-width: 640px) 105vw, 42vw"
+          className="inset-y-0 -right-[8vw] w-[104vw] sm:right-0 sm:w-[46vw] lg:right-[3%] lg:w-[40vw]"
           imageClassName="object-top sm:object-bottom"
         />
 
@@ -166,7 +166,7 @@ export default function Home() {
         {/* Glass panel anchored to the bottom edge of the first viewport —
             flush, no bottom border, so it reads as the floor of the hero. */}
         <div className="relative z-10 mx-auto mt-auto w-full max-w-5xl px-5 pt-[clamp(1.25rem,4svh,4rem)] sm:px-8 lg:px-14 xl:px-24">
-          <div className="border border-b-0 border-border/70 bg-card/80 px-4 pt-[clamp(1.25rem,3.4svh,3rem)] pb-0 shadow-sm backdrop-blur-md sm:px-8 md:px-10">
+          <div className="liquid-glass border-b-0 px-4 pt-[clamp(1.25rem,3.4svh,3rem)] pb-0 sm:px-8 md:px-10">
             <div className="grid gap-[clamp(1rem,2.4svh,1.5rem)] md:grid-cols-2 md:gap-14">
               <div>
                 <p className="text-[11px] font-medium tracking-[0.2em] text-muted-foreground uppercase">

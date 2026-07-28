@@ -3,21 +3,19 @@ import { cn } from "@/lib/utils";
 
 // The sculpture as its own layer, above the shader and never sampled into it.
 //
-// The plates are tight crops on a studio backdrop that carries a soft warm
-// vignette. `multiply` alone left that vignette as a visible shade, so the
-// white point is clipped first: brightness pushes the backdrop past 255 where
-// multiply drops it to nothing, while the sculpture's mid-tones survive.
-// This beats alpha matting — a transparent glass object has specular
-// highlights brighter than its own backdrop, so no threshold cuts it cleanly.
+// The plates are tight crops whose backdrop has been levels-stretched to pure
+// white at build time, so `multiply` erases it completely on every ivory
+// surface — no per-instance tuning, and it beats alpha matting, which cannot
+// cut a transparent glass object whose highlights outshine its own backdrop.
 export function Justitia({
   src,
   className,
   imageClassName,
   priority,
   sizes = "(max-width: 640px) 70vw, 45vw",
-  // Per-plate: the marble is far lighter than the crystal, so the clip that
-  // erases the crystal's backdrop erases the marble sculpture along with it.
-  brightness = 1.09,
+  // Plates ship pre-flattened (levels stretch at build), so no per-plate CSS
+  // clip is needed — this is only a nudge for edge cases.
+  brightness = 1,
 }: {
   src: string;
   className?: string;
@@ -37,7 +35,7 @@ export function Justitia({
         fill
         priority={priority}
         sizes={sizes}
-        style={{ filter: `brightness(${brightness}) contrast(1.06) saturate(0.15)` }}
+        style={{ filter: `brightness(${brightness}) contrast(1.04) saturate(0.12)` }}
         className={cn(
           "object-contain object-bottom mix-blend-multiply",
           imageClassName
