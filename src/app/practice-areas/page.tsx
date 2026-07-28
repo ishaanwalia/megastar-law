@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
-import { Card } from "@/components/ui/card";
-import { Reveal } from "@/components/reveal";
 import { CtaBanner } from "@/components/cta-banner";
+import { HoverRevealList } from "@/components/hover-reveal-list";
 import { practiceAreas } from "@/lib/firm-data";
 
 export const metadata: Metadata = {
@@ -27,25 +24,7 @@ export default function PracticeAreasPage() {
           matters that most affect individuals, families and businesses.
         </p>
 
-        <div className="mt-12 grid gap-5 sm:grid-cols-2">
-          {practiceAreas.map((area, i) => (
-            <Reveal key={area.slug} delay={(i % 2) * 0.1}>
-              <Link href={`/practice-areas/${area.slug}`} className="block h-full">
-                <Card className="h-full p-6 transition-colors hover:border-brand/50">
-                  <h2 className="font-heading text-xl font-medium">
-                    {area.title}
-                  </h2>
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    {area.summary}
-                  </p>
-                  <span className="mt-4 flex items-center gap-1 text-sm font-medium text-brand">
-                    Learn more <ArrowRight className="size-3.5" />
-                  </span>
-                </Card>
-              </Link>
-            </Reveal>
-          ))}
-        </div>
+        <HoverRevealList areas={practiceAreas} />
       </section>
 
       <CtaBanner
