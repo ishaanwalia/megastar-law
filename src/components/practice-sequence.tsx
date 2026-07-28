@@ -83,7 +83,7 @@ function DeckCard({
   return (
     <motion.article
       style={{ y, scale, opacity, zIndex: i }}
-      className="liquid-glass absolute inset-x-0 top-0 origin-top rounded-3xl p-6 sm:p-8"
+      className="liquid-glass-deck absolute inset-x-0 top-0 origin-top rounded-3xl p-6 shadow-lg sm:p-8"
     >
       <div className="flex items-start justify-between gap-6">
         <div className="[perspective:600px]">
@@ -233,7 +233,7 @@ export function PracticeSequence({
             {/* Phase 0 — the plate. No card, no border: on mobile it sits
                 behind everything, on desktop it holds the left column. */}
             <Justitia
-              src="/hero-marble-flat.webp"
+              src="/hero-marble-alpha.webp"
               sizes="(max-width: 1024px) 80vw, 20rem"
               className="inset-0 lg:inset-auto lg:top-0 lg:bottom-0 lg:left-0 lg:w-80"
               imageClassName="object-contain object-bottom opacity-45 lg:opacity-100"

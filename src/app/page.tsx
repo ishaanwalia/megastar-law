@@ -119,7 +119,7 @@ export default function Home() {
         {/* Above the shader, never sampled into it. Runs from under the header
             down to where the panel starts, hugging the right edge. */}
         <Justitia
-          src="/hero-glass-flat.webp"
+          src="/hero-glass-alpha.webp"
           priority
           sizes="(max-width: 640px) 105vw, 42vw"
           className="inset-y-0 -right-[8vw] w-[104vw] sm:right-0 sm:w-[46vw] lg:right-[3%] lg:w-[40vw]"

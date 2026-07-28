@@ -107,9 +107,7 @@ export function ReadingRail({ scope = "main" }: { scope?: string }) {
                 />
                 <span
                   className={`max-w-44 truncate text-[11px] transition-opacity duration-300 ${
-                    on
-                      ? "text-foreground opacity-100"
-                      : "text-muted-foreground opacity-0 group-hover:opacity-100"
+                    "opacity-0 group-hover:opacity-100 " + (on ? "text-foreground" : "text-muted-foreground")
                   }`}
                 >
                   {s.text}

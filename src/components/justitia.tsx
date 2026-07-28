@@ -3,10 +3,10 @@ import { cn } from "@/lib/utils";
 
 // The sculpture as its own layer, above the shader and never sampled into it.
 //
-// The plates are tight crops whose backdrop has been levels-stretched to pure
-// white at build time, so `multiply` erases it completely on every ivory
-// surface — no per-instance tuning, and it beats alpha matting, which cannot
-// cut a transparent glass object whose highlights outshine its own backdrop.
+// The plates ship with a real alpha channel, cut at build once the backdrop
+// was flat-fielded to pure white. Blend modes were fragile - multiply only
+// erases the backdrop when the element shares a stacking context with
+// something painted, which is why one instance worked and three did not.
 export function Justitia({
   src,
   className,
@@ -37,7 +37,7 @@ export function Justitia({
         sizes={sizes}
         style={{ filter: `brightness(${brightness}) contrast(1.04) saturate(0.12)` }}
         className={cn(
-          "object-contain object-bottom mix-blend-multiply",
+          "object-contain object-bottom",
           imageClassName
         )}
       />
