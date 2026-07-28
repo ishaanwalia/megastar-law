@@ -121,10 +121,13 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Credential strip — floats over the hero's bottom edge as a row of
-          centered glass cards, rather than sitting left-aligned in its own
-          flat-background section. */}
-      <div className="relative z-10 mx-auto -mt-10 max-w-6xl px-4 sm:-mt-14 sm:px-6">
+      {/* Marquee sits flush against the hero — no border between them — so
+          the ticker reads as the hero's own bottom edge, not a new section. */}
+      <Marquee items={credentialTicker} className="border-b border-border/60 py-4" />
+
+      {/* Credential strip — centered glass cards, sitting in normal flow
+          right after the marquee. */}
+      <div className="relative z-10 mx-auto max-w-6xl px-4 pt-10 sm:px-6">
         <dl className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
           {stats.map((s) => (
             <div
@@ -143,8 +146,6 @@ export default function Home() {
           ))}
         </dl>
       </div>
-
-      <Marquee items={credentialTicker} className="border-y border-border/60 py-4" />
 
       <section className="mx-auto max-w-6xl px-4 pt-14 pb-20 sm:px-6">
         <Reveal>
