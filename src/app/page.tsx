@@ -123,7 +123,7 @@ export default function Home() {
           priority
           scrim
           sizes="(max-width: 640px) 105vw, 42vw"
-          className="inset-y-0 -right-[8vw] w-[104vw] sm:right-0 sm:w-[46vw] lg:right-[3%] lg:w-[40vw]"
+          className="top-0 -right-[10vw] h-[64%] w-[78vw] opacity-45 sm:inset-y-0 sm:right-0 sm:h-auto sm:w-[46vw] sm:opacity-100 lg:right-[3%] lg:w-[40vw]"
           imageClassName="object-top sm:object-bottom"
         />
 
@@ -224,7 +224,7 @@ export default function Home() {
           {stats.map((s) => (
             <div
               key={s.label}
-              className={`flex flex-col items-center justify-center gap-1 rounded-2xl border border-t-2 border-brand/25 ${accentClasses[s.accent]} bg-card/70 px-4 py-6 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.6),0_16px_40px_-20px_rgba(0,0,0,0.2)] backdrop-blur-md`}
+              className={`flex flex-col items-center justify-center gap-1 rounded-2xl border border-t-2 border-brand/25 ${accentClasses[s.accent]} liquid-glass-frost px-4 py-6 text-center`}
             >
               <dt className="font-mono text-2xl font-medium tabular-nums">
                 {"value" in s ? (

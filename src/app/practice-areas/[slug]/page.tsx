@@ -94,7 +94,7 @@ export default async function PracticeAreaPage({
         </div>
 
         <Reveal delay={0.4}>
-          <div className="mt-12 rounded-xl border border-border bg-secondary/40 p-6">
+          <div className="mt-12 liquid-glass-frost rounded-xl p-6">
             <h2 className="font-heading text-lg font-medium">
               Discuss your matter
             </h2>
@@ -138,7 +138,7 @@ export default async function PracticeAreaPage({
             <div className="mt-6 grid gap-4 sm:grid-cols-3">
               {related.map((r) => (
                 <Link key={r.slug} href={`/practice-areas/${r.slug}`}>
-                  <Card className="h-full p-5 transition-colors hover:border-brand/50">
+                  <Card className="liquid-glass-frost h-full p-5 transition-colors hover:border-brand/50">
                     <div className="text-sm font-medium">{r.title}</div>
                   </Card>
                 </Link>

@@ -93,7 +93,7 @@ export default function RootLayout({
       <body className="flex min-h-svh flex-col">
         <JsonLd />
         <SiteHeader />
-        <main className="flex-1">{children}</main>
+        <main className="flex-1 pt-18">{children}</main>
         <ReadingRail />
         <SiteFooter />
         <FloatingWidgets />
