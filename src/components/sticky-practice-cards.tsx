@@ -55,7 +55,7 @@ function StickyCard({
   const scale = useTransform(progress, [i / total, 1], [1, targetScale]);
 
   return (
-    <div className="sticky top-[16vh] flex h-[62vh] items-start justify-center">
+    <div className="sticky top-[14vh] flex h-[42vh] items-start sm:top-[16vh] sm:h-[52vh] justify-center">
       <motion.div
         style={{ scale, top: i * 18 }}
         className="group relative w-full max-w-3xl origin-top overflow-hidden rounded-3xl border border-brand/20 bg-card/85 p-8 shadow-[inset_0_1px_0_rgba(255,255,255,0.7),0_30px_70px_-40px_rgba(31,42,51,0.55)] backdrop-blur-xl sm:p-10"
@@ -120,7 +120,7 @@ export function StickyPracticeCards({ areas }: { areas: Area[] }) {
   }
 
   return (
-    <div ref={container} className="relative pb-[30vh]">
+    <div ref={container} className="relative pb-[18vh] sm:pb-[30vh]">
       {areas.map((area, i) => (
         <StickyCard
           key={area.slug}

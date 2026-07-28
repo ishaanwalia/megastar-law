@@ -17,6 +17,12 @@ const CommandPalette = dynamic(() =>
   import("@/components/command-palette").then((m) => m.CommandPalette)
 );
 
+// Site-wide: it reads the page's own <h2>s and renders nothing when a page
+// has fewer than three, so it needs no per-page wiring.
+const ReadingRail = dynamic(() =>
+  import("@/components/reading-rail").then((m) => m.ReadingRail)
+);
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -79,12 +85,16 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} antialiased`}
     >
-      <body className="min-h-full flex flex-col">
+      {/* No height:100% on html/body — on iOS that pairing can hand scrolling
+          to a nested context and the sticky header stops pinning. min-h-svh
+          on the body alone gives the same full-height footer behaviour. */}
+      <body className="flex min-h-svh flex-col">
         <JsonLd />
         <SiteHeader />
         <main className="flex-1">{children}</main>
+        <ReadingRail />
         <SiteFooter />
         <FloatingWidgets />
         <CommandPalette />

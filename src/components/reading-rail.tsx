@@ -21,17 +21,29 @@ export function ReadingRail({ scope = "main" }: { scope?: string }) {
     });
     setSections(heads.map((h) => ({ id: h.id, text: h.textContent!.trim() })));
 
-    const io = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
-        if (visible) setActiveId(visible.target.id);
-      },
-      { rootMargin: "-20% 0px -70% 0px" }
-    );
+    // Recompute from ALL heading positions rather than trusting whichever
+    // entry fired: with a narrow rootMargin band, scrolling through a gap
+    // where no heading intersects leaves the old one stuck lit.
+    const sync = () => {
+      const line = window.innerHeight * 0.35;
+      let current = heads[0];
+      for (const h of heads) {
+        if (h.getBoundingClientRect().top <= line) current = h;
+      }
+      setActiveId(current.id);
+    };
+    sync();
+
+    const io = new IntersectionObserver(sync, {
+      threshold: [0, 1],
+      rootMargin: "0px 0px -35% 0px",
+    });
     heads.forEach((h) => io.observe(h));
-    return () => io.disconnect();
+    window.addEventListener("scroll", sync, { passive: true });
+    return () => {
+      io.disconnect();
+      window.removeEventListener("scroll", sync);
+    };
   }, [scope]);
 
   if (sections.length < 3) return null;

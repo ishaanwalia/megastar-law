@@ -19,10 +19,10 @@ export default function AboutPage() {
         <p className="text-sm font-medium tracking-wide text-brand uppercase">
           About the firm
         </p>
-        <h1 className="mt-3 max-w-2xl font-heading text-4xl font-medium tracking-tight sm:text-5xl">
+        <h1 className="mt-4 max-w-3xl font-heading text-4xl leading-[1.05] font-medium tracking-tight text-balance sm:text-5xl md:text-6xl">
           Quality over quantity, in every matter we take on.
         </h1>
-        <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
+        <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground">
           Megastar Law Associates was built on a simple premise: clients
           deserve personalized attention and dedicated care, not to be
           processed through a large firm&apos;s assembly line. We draw on
@@ -36,7 +36,7 @@ export default function AboutPage() {
           <div className="flex flex-col gap-16">
             {advocates.map((advocate, i) => (
               <Reveal key={advocate.name} delay={i * 0.1}>
-                <div className="grid gap-8 md:grid-cols-[10rem_1fr] md:items-start">
+                <div className="grid gap-8 md:grid-cols-[13rem_minmax(0,1fr)] md:gap-12 md:items-start">
                   <PhotoPlaceholder
                     label={`Photo needed: ${advocate.name}`}
                     hint="Headshot, plain background."
@@ -60,38 +60,38 @@ export default function AboutPage() {
                     ) : (
                       <>
                         {advocate.bio && (
-                          <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+                          <p className="mt-5 max-w-3xl text-base leading-relaxed text-muted-foreground">
                             {advocate.bio}
                           </p>
                         )}
-                        <dl className="mt-4 grid gap-3 sm:grid-cols-2">
+                        <dl className="mt-7 grid gap-x-10 gap-y-5 rounded-2xl border border-border bg-card/60 p-6 sm:grid-cols-2">
                           <div>
-                            <dt className="text-sm tracking-wide text-muted-foreground uppercase">
+                            <dt className="text-[11px] font-medium tracking-[0.18em] text-muted-foreground uppercase">
                               Enrollment
                             </dt>
-                            <dd className="mt-0.5 text-sm">
+                            <dd className="mt-1.5 text-sm leading-relaxed">
                               {advocate.enrollment}
                             </dd>
                           </div>
                           <div>
-                            <dt className="text-sm tracking-wide text-muted-foreground uppercase">
+                            <dt className="text-[11px] font-medium tracking-[0.18em] text-muted-foreground uppercase">
                               Experience
                             </dt>
-                            <dd className="mt-0.5 text-sm">
+                            <dd className="mt-1.5 text-sm leading-relaxed">
                               {advocate.experience}
                             </dd>
                           </div>
                           <div className="sm:col-span-2">
-                            <dt className="text-sm tracking-wide text-muted-foreground uppercase">
+                            <dt className="text-[11px] font-medium tracking-[0.18em] text-muted-foreground uppercase">
                               Bar Membership
                             </dt>
-                            <dd className="mt-0.5 text-sm">
+                            <dd className="mt-1.5 text-sm leading-relaxed">
                               {advocate.barMembership}
                             </dd>
                           </div>
                         </dl>
 
-                        <div className="mt-6 flex flex-wrap gap-2">
+                        <div className="mt-6 flex flex-wrap gap-2" data-specialties>
                           {advocate.specialties.map((s) => (
                             <Badge key={s} variant="secondary">
                               {s}

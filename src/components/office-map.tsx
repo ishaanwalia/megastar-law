@@ -1,54 +1,66 @@
-// Chambers map. OpenStreetMap's embed iframe — no API key, no tracker, no
-// per-load billing. Lazy-loaded so it never competes with first paint.
+// Chambers map. Google Maps' keyless `output=embed` endpoint, one embed per
+// address so each renders its own marker — the multi-marker Embed API needs a
+// billed key, and three small maps read better than one anyway.
 
 import { offices } from "@/lib/firm-data";
 
-// Bounding box around Sector 43/45 and the High Court, Chandigarh.
-const BBOX = "76.735,30.700,76.815,30.760";
-const SRC = `https://www.openstreetmap.org/export/embed.html?bbox=${BBOX}&layer=mapnik`;
+function mapSrc(address: string) {
+  return `https://www.google.com/maps?q=${encodeURIComponent(
+    address + ", Chandigarh, India"
+  )}&z=16&output=embed`;
+}
 
 export function OfficeMap() {
   return (
     <section className="border-t border-border">
       <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:px-14">
-        <h2 className="font-heading text-3xl font-medium tracking-tight">
-          Where to find us
-        </h2>
-        <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_1.4fr]">
-          <ul className="flex flex-col gap-4">
-            {offices.map((office) => (
-              <li
-                key={office.label}
-                className="rounded-2xl border border-border bg-card p-5 transition-colors hover:border-brand/50"
-              >
-                <div className="font-heading text-base font-medium">
-                  {office.label}
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <h2 className="font-heading text-3xl font-medium tracking-tight">
+            Where to find us
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Three locations across Chandigarh.
+          </p>
+        </div>
+
+        <div className="mt-8 grid gap-5 md:grid-cols-3">
+          {offices.map((office, i) => (
+            <div
+              key={office.label}
+              className="group overflow-hidden rounded-2xl border border-border bg-card transition-colors hover:border-brand/50"
+            >
+              <iframe
+                src={mapSrc(office.address)}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title={`Map — ${office.label}`}
+                className="h-52 w-full border-0 grayscale-[0.4] transition-[filter] duration-300 group-hover:grayscale-0"
+              />
+              <div className="border-t border-border p-5">
+                <div className="flex items-baseline gap-2">
+                  <span className="font-mono text-xs text-brand tabular-nums">
+                    0{i + 1}
+                  </span>
+                  <span className="font-heading text-base font-medium">
+                    {office.label}
+                  </span>
                 </div>
-                <p className="mt-1.5 text-sm text-muted-foreground">
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                   {office.address}
                 </p>
                 <a
-                  href={`https://www.openstreetmap.org/search?query=${encodeURIComponent(
-                    office.address + ", Chandigarh"
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                    office.address + ", Chandigarh, India"
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="mt-3 inline-block text-sm font-medium text-brand hover:underline"
                 >
-                  Open in maps
+                  Directions
                 </a>
-              </li>
-            ))}
-          </ul>
-          <div className="overflow-hidden rounded-2xl border border-border">
-            <iframe
-              src={SRC}
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              title="Megastar Law Associates — Chandigarh chambers"
-              className="h-full min-h-[22rem] w-full grayscale-[0.35] contrast-[1.05]"
-            />
-          </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>

@@ -6,7 +6,6 @@ import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Reveal } from "@/components/reveal";
-import { ReadingRail } from "@/components/reading-rail";
 import { firm, practiceAreas } from "@/lib/firm-data";
 
 export function generateStaticParams() {
@@ -40,7 +39,6 @@ export default async function PracticeAreaPage({
 
   return (
     <>
-      <ReadingRail />
       <section className="mx-auto max-w-4xl px-4 py-16 sm:px-6 md:py-24">
         <Link
           href="/practice-areas"

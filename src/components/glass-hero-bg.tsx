@@ -1,15 +1,13 @@
 "use client";
 
-// Hero background — a single WebGL pass over the supplied glass-structure
-// still: the image is cover-fitted and drifts slowly, its luminance tints
-// between ivory and charcoal so it always reads as our palette, and the whole
-// scene is refracted through drifting fluted-glass ribs with chromatic
-// fringing, plus a teal bloom that trails the cursor with momentum and a
-// whisper of film grain. Raw WebGL, no library.
+// Hero background — pure fluted glass. A drifting swirl seen through diagonal
+// ribs that refract with chromatic fringing, plus a teal bloom trailing the
+// cursor with momentum and a whisper of film grain.
 //
-// If WebGL is unavailable the same image still shows through a CSS
-// background layer underneath the canvas, so the hero never renders blank.
-// Freezes entirely under prefers-reduced-motion.
+// The sculpture is NOT in here. It sits above this canvas as its own layer so
+// the ribs never touch it — sampling her into the shader is what made the
+// scales and sword disappear. Raw WebGL, no library; freezes entirely under
+// prefers-reduced-motion, and degrades to plain background with no WebGL.
 
 import { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
@@ -27,15 +25,10 @@ precision mediump float;
 uniform vec2 u_resolution;
 uniform float u_time;
 uniform vec2 u_mouse;
-uniform sampler2D u_tex;
-uniform float u_hasTex;
-uniform float u_texAspect;
-uniform vec4 u_region;
 
 const vec3 IVORY = vec3(0.973, 0.961, 0.941);
 const vec3 TEAL  = vec3(0.227, 0.420, 0.420);
 const vec3 SLATE = vec3(0.361, 0.420, 0.478);
-const vec3 CHAR  = vec3(0.122, 0.165, 0.200);
 
 float hash(vec2 p) {
   p = fract(p * vec2(123.34, 456.21));
@@ -65,58 +58,8 @@ float fbm(vec2 p) {
   return v;
 }
 
-// The plate only occupies a REGION of the screen (u_region = x0,y0,x1,y1),
-// parked bottom-right so the sculpture never sits behind the headline block.
-// Within that region the source is cover-fitted anchored to its own right
-// edge — the subject lives in the right third of the image, so a centred crop
-// slices her in half on anything narrower than the plate.
-vec2 plateUv(vec2 uv, float aspect) {
-  vec2 r = (uv - u_region.xy) / (u_region.zw - u_region.xy);
-  float regionAspect =
-    aspect * (u_region.z - u_region.x) / (u_region.w - u_region.y);
-  float w = clamp(regionAspect / u_texAspect, 0.55, 1.0);
-  float h = w * u_texAspect / regionAspect;
-  vec2 c = vec2((1.0 - w) + r.x * w, (1.0 - h) + r.y * h);
-  c += vec2(sin(u_time * 0.035), cos(u_time * 0.028)) * 0.008;
-  return vec2(c.x, 1.0 - c.y);
-}
-
-// Everything sitting behind the glass. The swirl value is computed once in
-// main() and passed in, so the three chromatic samples cost three texture
-// reads rather than three full fbm evaluations.
-// How strongly the sculpture occupies this pixel: inside the plate AND darker
-// than the studio backdrop. Used to CLEAR the glass over her — full ribs
-// across empty ivory, near-flat glass over the scales, sword and blindfold,
-// which are thin enough that a 0.028 UV displacement erases them entirely.
-float subjectMask(vec2 uv, float aspect) {
-  vec2 p = plateUv(uv, aspect);
-  float bounds =
-      smoothstep(0.0, 0.03, p.x) * smoothstep(1.0, 0.97, p.x)
-    * smoothstep(0.0, 0.05, p.y) * smoothstep(1.0, 0.95, p.y);
-  float l = dot(texture2D(u_tex, p).rgb, vec3(0.299, 0.587, 0.114));
-  return bounds * (1.0 - smoothstep(0.62, 0.88, l));
-}
-
 vec3 scene(vec2 uv, float aspect, float swirl) {
-  vec3 col = mix(IVORY, mix(IVORY, SLATE, 0.5), smoothstep(0.25, 0.85, swirl));
-
-  vec2 puv = plateUv(uv, aspect);
-  vec3 img = texture2D(u_tex, puv).rgb;
-  float lum = dot(img, vec3(0.299, 0.587, 0.114));
-  // Push contrast around mid-grey so the carving reads through the ribs; the
-  // plate is a very low-contrast studio shot on its own.
-  lum = clamp((lum - 0.52) * 1.55 + 0.52, 0.0, 1.0);
-  vec3 tinted = mix(mix(SLATE, CHAR, 0.4), IVORY, smoothstep(0.06, 0.68, lum));
-  // Soft-mask to the plate's own bounds AND to the screen region, so the
-  // sculpture fades into the swirl instead of ending on a hard edge.
-  float inside =
-      smoothstep(0.0, 0.03, puv.x) * smoothstep(1.0, 0.97, puv.x)
-    * smoothstep(0.0, 0.05, puv.y) * smoothstep(1.0, 0.95, puv.y);
-  vec2 r = (uv - u_region.xy) / (u_region.zw - u_region.xy);
-  inside *= smoothstep(0.0, 0.14, r.x) * smoothstep(1.0, 0.99, r.x)
-          * smoothstep(0.0, 0.02, r.y) * smoothstep(1.0, 0.90, r.y);
-  col = mix(col, tinted, 0.82 * u_hasTex * inside);
-
+  vec3 col = mix(IVORY, mix(IVORY, SLATE, 0.42), smoothstep(0.22, 0.88, swirl));
   vec2 d = (uv - u_mouse) * vec2(aspect, 1.0);
   float bloom = exp(-dot(d, d) * 3.0);
   col = mix(col, TEAL, bloom * 0.4);
@@ -129,27 +72,23 @@ void main() {
   float aspect = u_resolution.x / u_resolution.y;
   float t = u_time * 0.04;
 
-  // Fluted glass: diagonal ribs at 31 degrees, drifting slowly. Each rib is
-  // a rounded lens, so the surface normal — and with it the refraction
-  // offset — sweeps across the rib and pinches at its edges.
+  // Diagonal ribs at 31 degrees, drifting slowly. Each rib is a rounded lens,
+  // so the surface normal — and with it the refraction offset — sweeps across
+  // the rib and pinches at its edges.
   float a = radians(31.0);
   vec2 dir = vec2(cos(a), sin(a));
   float rib = fract(dot(uv * vec2(aspect, 1.0), dir) * 8.0 + u_time * 0.15) - 0.5;
-  float clearGlass = subjectMask(uv, aspect);
-  vec2 off = dir * sin(rib * 3.14159265) * mix(0.028, 0.003, clearGlass);
+  vec2 off = dir * sin(rib * 3.14159265) * 0.03;
 
   float swirl = fbm((uv + off) * 2.4 + vec2(t, -t * 0.7));
 
-  // Chromatic fringing — the three channels refract by slightly different
-  // amounts, which is what makes glass read as glass. Also pulled back over
-  // the sculpture so her edges stay clean.
-  float ab = mix(0.012, 0.003, clearGlass);
+  float ab = 0.014;
   vec3 col;
   col.r = scene(uv + off * (1.0 + ab), aspect, swirl).r;
   col.g = scene(uv + off, aspect, swirl).g;
   col.b = scene(uv + off * (1.0 - ab), aspect, swirl).b;
 
-  col += pow(abs(rib) * 2.0, 4.0) * mix(0.13, 0.03, clearGlass);
+  col += pow(abs(rib) * 2.0, 4.0) * 0.13;
   col += (hash(gl_FragCoord.xy + u_time) - 0.5) * 0.05;
 
   gl_FragColor = vec4(col, 1.0);
@@ -172,13 +111,7 @@ function compileShader(
   return shader;
 }
 
-export function GlassHeroBg({
-  className,
-  imageSrc,
-}: {
-  className?: string;
-  imageSrc: string;
-}) {
+export function GlassHeroBg({ className }: { className?: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -202,7 +135,6 @@ export function GlassHeroBg({
     gl.linkProgram(program);
     if (!gl.getProgramParameter(program, gl.LINK_STATUS)) return;
     gl.useProgram(program);
-    // The canvas is opaque once it draws, so hide the CSS fallback beneath it.
     canvas.style.opacity = "1";
 
     const positionBuffer = gl.createBuffer();
@@ -219,61 +151,12 @@ export function GlassHeroBg({
     const resolutionLoc = gl.getUniformLocation(program, "u_resolution");
     const timeLoc = gl.getUniformLocation(program, "u_time");
     const mouseLoc = gl.getUniformLocation(program, "u_mouse");
-    const hasTexLoc = gl.getUniformLocation(program, "u_hasTex");
-    const texAspectLoc = gl.getUniformLocation(program, "u_texAspect");
-    const regionLoc = gl.getUniformLocation(program, "u_region");
-
-    // Non-power-of-two source, so: clamp + linear, never mipmaps. Seeded with
-    // one ivory pixel so the first frames draw before the image decodes.
-    const texture = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.texImage2D(
-      gl.TEXTURE_2D,
-      0,
-      gl.RGB,
-      1,
-      1,
-      0,
-      gl.RGB,
-      gl.UNSIGNED_BYTE,
-      new Uint8Array([248, 245, 240])
-    );
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.uniform1i(gl.getUniformLocation(program, "u_tex"), 0);
-
-    let hasTex = 0;
-    let texAspect = 1;
-    let raf = 0;
-    let disposed = false;
-
-    const image = new Image();
-    image.decoding = "async";
-    image.src = imageSrc;
-    image.onload = () => {
-      if (disposed) return;
-      texAspect = image.naturalWidth / Math.max(1, image.naturalHeight);
-      gl.bindTexture(gl.TEXTURE_2D, texture);
-      gl.texImage2D(
-        gl.TEXTURE_2D,
-        0,
-        gl.RGB,
-        gl.RGB,
-        gl.UNSIGNED_BYTE,
-        image
-      );
-      hasTex = 1;
-      if (reduceMotion) draw(performance.now());
-    };
 
     const reduceMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
 
-    // Target follows the pointer; the drawn position eases toward it, which
-    // is where the "momentum" in the bloom comes from.
+    let raf = 0;
     const eased = { x: 0.5, y: 0.55 };
     let pointer: { x: number; y: number } | null = null;
 
@@ -300,8 +183,6 @@ export function GlassHeroBg({
     function draw(now: number) {
       resize();
       const t = now * 0.001;
-
-      // No pointer yet: drift on a slow orbit so the bloom is never static.
       const tx = pointer ? pointer.x : 0.5 + 0.2 * Math.cos(t * 0.28);
       const ty = pointer ? pointer.y : 0.55 + 0.13 * Math.sin(t * 0.21);
       eased.x += (tx - eased.x) * 0.05;
@@ -310,18 +191,6 @@ export function GlassHeroBg({
       gl!.uniform2f(resolutionLoc, canvas!.width, canvas!.height);
       gl!.uniform1f(timeLoc, t);
       gl!.uniform2f(mouseLoc, eased.x, eased.y);
-      gl!.uniform1f(hasTexLoc, hasTex);
-      gl!.uniform1f(texAspectLoc, texAspect);
-      // Landscape: bottom-right, clear of the headline. Portrait: full width
-      // across the bottom 60%, under the copy rather than behind it.
-      const wide = canvas!.width / canvas!.height > 1;
-      gl!.uniform4f(
-        regionLoc,
-        wide ? 0.34 : 0.0,
-        0,
-        1,
-        wide ? 0.94 : 0.6
-      );
       gl!.drawArrays(gl!.TRIANGLE_STRIP, 0, 4);
       if (!reduceMotion) raf = requestAnimationFrame(draw);
     }
@@ -335,31 +204,22 @@ export function GlassHeroBg({
     else window.addEventListener("resize", resize);
 
     return () => {
-      disposed = true;
       cancelAnimationFrame(raf);
-      image.onload = null;
       window.removeEventListener("pointermove", onPointerMove);
       if (ro) ro.disconnect();
       else window.removeEventListener("resize", resize);
-      gl.deleteTexture(texture);
       gl.deleteProgram(program);
       gl.deleteShader(vertexShader);
       gl.deleteShader(fragmentShader);
       gl.deleteBuffer(positionBuffer);
     };
-  }, [imageSrc]);
+  }, []);
 
   return (
     <div
       aria-hidden
       className={cn("absolute inset-0 overflow-hidden", className)}
     >
-      {/* Fallback layer: shows the same still if WebGL never comes up. The
-          canvas paints over it opaquely once the shader links. */}
-      <div
-        className="absolute inset-0 bg-cover bg-right-bottom opacity-40 saturate-50"
-        style={{ backgroundImage: `url(${imageSrc})` }}
-      />
       <canvas
         ref={canvasRef}
         className="absolute inset-0 h-full w-full opacity-0 transition-opacity duration-500"
