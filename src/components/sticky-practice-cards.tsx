@@ -65,16 +65,11 @@ function StickyCard({
           className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand/50 to-transparent"
         />
         <div className="flex items-start justify-between gap-6">
-          {/* Icon tile flips on card hover — two faces on one rotating plane,
-              so the strokes turn over rather than cross-fading. */}
+          {/* The tile turns a full 360 on hover and holds — it comes back as
+              the practice icon, never parks on a decorative arrow. */}
           <div className="[perspective:600px]">
-            <div className="relative size-14 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]">
-              <span className="absolute inset-0 flex items-center justify-center rounded-xl bg-slate text-slate-foreground shadow-sm [backface-visibility:hidden]">
-                <Icon className="size-6" />
-              </span>
-              <span className="absolute inset-0 flex items-center justify-center rounded-xl bg-brand text-brand-foreground shadow-sm [backface-visibility:hidden] [transform:rotateY(180deg)]">
-                <ArrowUpRight className="size-6" />
-              </span>
+            <div className="flex size-14 items-center justify-center rounded-xl bg-slate text-slate-foreground shadow-sm group-hover:animate-[icon-spin_1.1s_cubic-bezier(0.65,0,0.35,1)] motion-reduce:group-hover:animate-none">
+              <Icon className="size-6" />
             </div>
           </div>
           <span className="font-mono text-xs tracking-[0.25em] text-brand tabular-nums">

@@ -64,14 +64,19 @@ float fbm(vec2 p) {
   return v;
 }
 
-// Cover-fit the texture into the viewport, then drift it slowly so a still
-// image still reads as a living surface.
-vec2 coverUv(vec2 uv, float aspect) {
-  vec2 s = u_texAspect > aspect
-    ? vec2(aspect / u_texAspect, 1.0)
-    : vec2(1.0, u_texAspect / aspect);
-  vec2 c = (uv - 0.5) * s / 1.08 + 0.5;
-  c += vec2(sin(u_time * 0.035) * 0.012, cos(u_time * 0.028) * 0.012);
+// Fit the source into the viewport, anchored to its RIGHT edge — the whole
+// subject lives in the right third of the plate, and a centred cover crop
+// slices it in half on anything narrower than the image. Horizontal crop is
+// capped at 45% so portrait phones letterbox vertically (into the plate's own
+// ivory) instead of cropping down to a sliver of the subject.
+vec2 plateUv(vec2 uv, float aspect) {
+  float w = clamp(aspect / u_texAspect, 0.55, 1.0);
+  float h = w * u_texAspect / aspect;
+  vec2 c = vec2(
+    (1.0 - w) + uv.x * w,
+    (1.0 - h) * 0.5 + uv.y * h
+  );
+  c += vec2(sin(u_time * 0.035), cos(u_time * 0.028)) * 0.008;
   return vec2(c.x, 1.0 - c.y);
 }
 
@@ -81,10 +86,16 @@ vec2 coverUv(vec2 uv, float aspect) {
 vec3 scene(vec2 uv, float aspect, float swirl) {
   vec3 col = mix(IVORY, mix(IVORY, SLATE, 0.5), smoothstep(0.25, 0.85, swirl));
 
-  vec3 img = texture2D(u_tex, coverUv(uv, aspect)).rgb;
+  vec2 puv = plateUv(uv, aspect);
+  vec3 img = texture2D(u_tex, puv).rgb;
   float lum = dot(img, vec3(0.299, 0.587, 0.114));
-  vec3 tinted = mix(mix(CHAR, SLATE, 0.65), IVORY, smoothstep(0.06, 0.8, lum));
-  col = mix(col, tinted, 0.72 * u_hasTex);
+  // Keep the crystal bright and silver — the dark end only bottoms out in the
+  // deepest shadow, so the sculpture reads as glass instead of a silhouette.
+  vec3 tinted = mix(mix(SLATE, CHAR, 0.35), IVORY, smoothstep(0.02, 0.62, lum));
+  // Outside the plate (letterboxed phones) fade back to the swirl rather than
+  // smearing the clamped edge rows down the screen.
+  float inside = smoothstep(0.0, 0.03, puv.y) * smoothstep(1.0, 0.97, puv.y);
+  col = mix(col, tinted, 0.78 * u_hasTex * inside);
 
   vec2 d = (uv - u_mouse) * vec2(aspect, 1.0);
   float bloom = exp(-dot(d, d) * 3.0);
@@ -104,7 +115,7 @@ void main() {
   float a = radians(31.0);
   vec2 dir = vec2(cos(a), sin(a));
   float rib = fract(dot(uv * vec2(aspect, 1.0), dir) * 8.0 + u_time * 0.15) - 0.5;
-  vec2 off = dir * sin(rib * 3.14159265) * 0.035;
+  vec2 off = dir * sin(rib * 3.14159265) * 0.022;
 
   float swirl = fbm((uv + off) * 2.4 + vec2(t, -t * 0.7));
 
@@ -313,7 +324,7 @@ export function GlassHeroBg({
       {/* Fallback layer: shows the same still if WebGL never comes up. The
           canvas paints over it opaquely once the shader links. */}
       <div
-        className="absolute inset-0 bg-cover bg-center opacity-40 saturate-50"
+        className="absolute inset-0 bg-cover bg-right opacity-40 saturate-50"
         style={{ backgroundImage: `url(${imageSrc})` }}
       />
       <canvas

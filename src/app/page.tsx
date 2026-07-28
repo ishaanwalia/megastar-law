@@ -83,7 +83,7 @@ export default function Home() {
       {/* -mt-18 pulls the section up under the sticky header (h-18) so the
           shader runs full-bleed behind the nav; pt-18 puts the content back. */}
       <section className="relative -mt-18 flex min-h-[100svh] flex-col overflow-hidden bg-background pt-18">
-        <GlassHeroBg imageSrc="/hero-glass.jpeg" />
+        <GlassHeroBg imageSrc="/hero-marble.jpeg" />
 
         <div className="relative z-10 mx-auto w-full max-w-6xl px-4 pt-14 sm:px-6 md:pt-20">
           <p className="text-xs font-medium tracking-[0.25em] text-brand uppercase">
@@ -122,8 +122,8 @@ export default function Home() {
 
         {/* Glass panel anchored to the bottom edge of the first viewport —
             flush, no bottom border, so it reads as the floor of the hero. */}
-        <div className="relative z-10 mx-auto mt-auto w-full max-w-5xl px-4 pt-16 sm:px-6">
-          <div className="border border-b-0 border-border/70 bg-card/80 px-5 pt-8 pb-0 shadow-sm backdrop-blur-md sm:px-8 sm:pt-10 md:px-10 md:pt-12">
+        <div className="relative z-10 mx-auto mt-auto w-full max-w-5xl px-4 pt-10 sm:px-6 sm:pt-16">
+          <div className="border border-b-0 border-border/70 bg-card/80 px-4 pt-6 pb-0 shadow-sm backdrop-blur-md sm:px-8 sm:pt-10 md:px-10 md:pt-12">
             <div className="grid gap-6 md:grid-cols-2 md:gap-14">
               <div>
                 <p className="text-[11px] font-medium tracking-[0.2em] text-muted-foreground uppercase">
@@ -141,23 +141,27 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="mt-6 h-px w-full bg-border sm:mt-8 md:mt-10" />
+            <div className="mt-5 h-px w-full bg-border sm:mt-8 md:mt-10" />
 
-            <div className="grid gap-2 py-5 sm:grid-cols-3 sm:gap-3">
+            {/* Three across at every width — stacking these on mobile pushed
+                the panel a full 250px past the fold. */}
+            <div className="grid grid-cols-3 gap-1.5 py-4 sm:gap-3 sm:py-5">
               {heroPanelLinks.map((item, i) => (
                 <Link
                   key={item.label}
                   href={item.href}
-                  className="group flex items-center justify-between bg-secondary/70 px-4 py-3.5 transition-colors duration-200 hover:bg-secondary sm:px-6 sm:py-4"
+                  className="group flex items-center justify-between gap-1 bg-secondary/70 px-2.5 py-3 transition-colors duration-200 hover:bg-secondary sm:px-6 sm:py-4"
                 >
-                  <span className="text-sm">
+                  <span className="text-[11px] sm:text-sm">
                     <span className="text-muted-foreground/70 tabular-nums">
                       0{i + 1}
                     </span>
-                    <span className="mx-2 text-muted-foreground/50">/</span>
+                    <span className="mx-1 text-muted-foreground/50 sm:mx-2">
+                      /
+                    </span>
                     <span className="font-medium">{item.label}</span>
                   </span>
-                  <ArrowRight className="size-4 text-muted-foreground/60 transition-all duration-200 group-hover:translate-x-0.5 group-hover:text-foreground" />
+                  <ArrowRight className="hidden size-4 shrink-0 text-muted-foreground/60 transition-all duration-200 group-hover:translate-x-0.5 group-hover:text-foreground sm:block" />
                 </Link>
               ))}
             </div>

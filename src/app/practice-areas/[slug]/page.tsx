@@ -54,7 +54,7 @@ export default async function PracticeAreaPage({
         {/* Landscape plate between the heading and the body copy. Run through
             the site duotone so every area reads as one charcoal+teal system
             rather than seven unrelated stock photos. */}
-        <div className="relative mt-10 aspect-[21/9] overflow-hidden rounded-2xl border border-border">
+        <div className="relative mt-8 aspect-[3/2] overflow-hidden rounded-2xl border border-border sm:mt-10 sm:aspect-[21/9]">
           <Image
             src={`/practice/${area.slug}.jpg`}
             alt=""
