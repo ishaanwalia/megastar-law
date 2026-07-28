@@ -229,7 +229,8 @@ Homepage: Performance **90→91** (was 93 at initial build, §7), Accessibility 
 
 **Blocked on the client:**
 - [ ] §0 answers — confirmed office-city list, whether the "150 partners/29 years" claim is real, Nikhil Choudhary's bio/photo/enrollment number
-- [ ] Real photography of Pradeep, Nikhil, and both chambers (or an explicit decision to launch without and add later)
+- [ ] Real photography of Pradeep, Nikhil, and both chambers — explicit decision made: launched with obvious `PhotoPlaceholder` boxes (hero, homepage founder section, About page) instead of stock/AI imagery. Swap each for `next/image` once real photos arrive.
+- [ ] Client testimonials — homepage "What clients say" section is a dashed placeholder on purpose; do not fill it with invented quotes. Needs 2-3 real client quotes with written permission to publish.
 
 **Infrastructure/config (needs your Vercel/Supabase/Resend access):**
 - [ ] Add `NEXT_PUBLIC_SUPABASE_URL` + `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` to Vercel's Environment Variables — deployed CRM currently can't reach Supabase without these

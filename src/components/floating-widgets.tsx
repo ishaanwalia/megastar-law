@@ -55,7 +55,9 @@ export function FloatingWidgets() {
           </div>
         </div>
       )}
-      <WhatsAppButton />
+      <div className="motion-safe:animate-[widget-in_0.5s_ease-out_1s_both]">
+        <WhatsAppButton />
+      </div>
     </div>
   );
 }

@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { CheckCircle2 } from "lucide-react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Reveal } from "@/components/reveal";
 import { CtaBanner } from "@/components/cta-banner";
+import { PhotoPlaceholder } from "@/components/photo-placeholder";
 import { advocates, offices } from "@/lib/firm-data";
 
 export const metadata: Metadata = {
@@ -11,15 +11,6 @@ export const metadata: Metadata = {
   description:
     "Meet the advocates of Megastar Law Associates in Chandigarh — credentials, bar enrollment and areas of specialization.",
 };
-
-function initials(name: string) {
-  return name
-    .split(" ")
-    .map((p) => p[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
-}
 
 export default function AboutPage() {
   return (
@@ -45,12 +36,12 @@ export default function AboutPage() {
           <div className="flex flex-col gap-16">
             {advocates.map((advocate, i) => (
               <Reveal key={advocate.name} delay={i * 0.1}>
-                <div className="grid gap-8 md:grid-cols-[auto_1fr] md:items-start">
-                  <Avatar className="size-20 border border-border">
-                    <AvatarFallback className="font-heading text-xl">
-                      {initials(advocate.fullName)}
-                    </AvatarFallback>
-                  </Avatar>
+                <div className="grid gap-8 md:grid-cols-[10rem_1fr] md:items-start">
+                  <PhotoPlaceholder
+                    label={`Photo needed: ${advocate.name}`}
+                    hint="Headshot, plain background."
+                    aspect="aspect-square"
+                  />
 
                   <div>
                     <h2 className="font-heading text-2xl font-medium">

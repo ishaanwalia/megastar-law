@@ -74,7 +74,7 @@ export default function WhyUsPage() {
           <div className="grid gap-6 md:grid-cols-2">
             {pillars.map((p, i) => (
               <Reveal key={p.key} delay={(i % 2) * 0.1}>
-                <Card className="h-full p-6">
+                <Card className="h-full p-6 transition-colors hover:border-gold/50">
                   <p.icon className="size-6 text-gold" />
                   <h2 className="mt-4 font-heading text-lg font-medium">
                     {p.title}

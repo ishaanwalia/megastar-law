@@ -22,7 +22,7 @@ export function SiteFooter() {
             </a>
           </div>
           <Button render={<Link href="/contact" />} nativeButton={false}>
-            Book a Consultation <ArrowRight className="size-4" />
+            Get a Call Back <ArrowRight className="size-4" />
           </Button>
         </div>
       </div>

@@ -2,11 +2,21 @@ import Link from "next/link";
 import { ArrowRight, Clock, ShieldCheck, Scale, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Reveal } from "@/components/reveal";
 import { CtaBanner } from "@/components/cta-banner";
+import { PhotoPlaceholder } from "@/components/photo-placeholder";
+import { FaqSection } from "@/components/faq-section";
 import { firm, advocates, practiceAreas } from "@/lib/firm-data";
 
 const pradeep = advocates[0];
+
+const stats = [
+  { value: "15+", label: "Years practicing, civil & criminal" },
+  { value: "2011", label: "Enrolled, Punjab & Haryana Bar" },
+  { value: "7", label: "Practice areas covered" },
+  { value: "24/7", label: "Legal helpline" },
+];
 
 const values = [
   {
@@ -29,6 +39,7 @@ const values = [
 export default function Home() {
   return (
     <>
+      {/* Hero — intentionally has no scroll animation; it's the LCP element. */}
       <section className="relative overflow-hidden">
         <div className="mx-auto grid max-w-6xl gap-10 px-4 py-20 sm:px-6 md:grid-cols-2 md:py-28">
           <div>
@@ -46,7 +57,7 @@ export default function Home() {
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-4">
               <Button size="lg" render={<Link href="/contact" />} nativeButton={false}>
-                Book a Consultation
+                Speak With an Advocate Today
                 <ArrowRight className="size-4" />
               </Button>
               <a
@@ -59,59 +70,29 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="relative flex h-full items-center justify-center rounded-2xl border border-border bg-card p-10">
-            <dl className="grid w-full grid-cols-2 gap-8 text-center">
-              <div>
-                <dt className="font-heading text-3xl font-medium">15+</dt>
-                <dd className="mt-1 text-sm text-muted-foreground">
-                  Years practicing, civil & criminal
-                </dd>
-              </div>
-              <div>
-                <dt className="font-heading text-3xl font-medium">2011</dt>
-                <dd className="mt-1 text-sm text-muted-foreground">
-                  Enrolled, Punjab &amp; Haryana Bar
-                </dd>
-              </div>
-              <div>
-                <dt className="font-heading text-3xl font-medium">7</dt>
-                <dd className="mt-1 text-sm text-muted-foreground">
-                  Practice areas covered
-                </dd>
-              </div>
-              <div>
-                <dt className="font-heading text-3xl font-medium">24/7</dt>
-                <dd className="mt-1 text-sm text-muted-foreground">
-                  Legal helpline
-                </dd>
-              </div>
-            </dl>
-          </div>
+          <PhotoPlaceholder
+            label={`Photo needed: ${pradeep.name}`}
+            hint="Professional headshot or a Punjab & Haryana High Court exterior shot — the first thing a visitor sees."
+            className="w-full"
+          />
         </div>
       </section>
 
-      <section className="border-t border-border bg-secondary/40">
-        <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
-          <Reveal>
-            <h2 className="font-heading text-3xl font-medium tracking-tight">
-              Why clients choose Megastar
-            </h2>
-          </Reveal>
-          <div className="mt-10 grid gap-6 md:grid-cols-3">
-            {values.map((v, i) => (
-              <Reveal key={v.title} delay={i * 0.1}>
-                <Card className="h-full p-6">
-                  <v.icon className="size-6 text-gold" />
-                  <h3 className="mt-4 font-heading text-lg font-medium">
-                    {v.title}
-                  </h3>
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    {v.body}
-                  </p>
-                </Card>
-              </Reveal>
+      {/* Credential strip — the hero's supporting evidence, not its headline. */}
+      <section className="border-t border-border/60">
+        <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+          <dl className="grid grid-cols-2 gap-6 sm:grid-cols-4">
+            {stats.map((s) => (
+              <div key={s.label}>
+                <dt className="font-mono text-2xl font-medium tabular-nums">
+                  {s.value}
+                </dt>
+                <dd className="mt-1 text-xs text-muted-foreground">
+                  {s.label}
+                </dd>
+              </div>
             ))}
-          </div>
+          </dl>
         </div>
       </section>
 
@@ -147,17 +128,67 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Why Megastar — a voice and a list, not a third round of icon cards. */}
+      <section className="border-t border-border bg-secondary/40">
+        <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
+          <Reveal>
+            <div className="grid gap-12 md:grid-cols-2 md:items-start">
+              <blockquote className="border-l-2 border-gold pl-6">
+                <p className="font-heading text-2xl leading-snug font-medium tracking-tight">
+                  &ldquo;Clients deserve personalized attention and dedicated
+                  care — not to be processed through a large firm&apos;s
+                  assembly line.&rdquo;
+                </p>
+                <footer className="mt-4 text-sm text-muted-foreground">
+                  {pradeep.name}, Founder
+                </footer>
+              </blockquote>
+
+              <ul className="flex flex-col gap-6">
+                {values.map((v) => (
+                  <li key={v.title} className="flex gap-4">
+                    <v.icon className="mt-0.5 size-5 shrink-0 text-gold" />
+                    <div>
+                      <h3 className="font-heading text-base font-medium">
+                        {v.title}
+                      </h3>
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        {v.body}
+                      </p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
       <section className="border-t border-border">
         <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
           <Reveal>
-            <div className="grid gap-10 md:grid-cols-[1fr_auto] md:items-center">
+            <div className="grid gap-10 md:grid-cols-[auto_1fr_auto] md:items-center">
+              <PhotoPlaceholder
+                label={`Photo needed: ${pradeep.name}`}
+                hint="Headshot, plain background."
+                aspect="aspect-square"
+                className="w-32 shrink-0"
+              />
               <div>
                 <p className="text-sm font-medium tracking-wide text-gold uppercase">
                   Founder
                 </p>
-                <h2 className="mt-3 font-heading text-3xl font-medium tracking-tight">
-                  {pradeep.name}
-                </h2>
+                <div className="mt-3 flex flex-wrap items-center gap-3">
+                  <h2 className="font-heading text-3xl font-medium tracking-tight">
+                    {pradeep.name}
+                  </h2>
+                  <Badge
+                    variant="outline"
+                    className="border-ledger/40 text-ledger"
+                  >
+                    Bar Enrollment {pradeep.enrollment}
+                  </Badge>
+                </div>
                 <p className="mt-4 max-w-2xl text-muted-foreground">
                   Enrolled as an Advocate ({pradeep.enrollment}), member of the{" "}
                   {pradeep.barMembership}. {pradeep.experience}, with
@@ -178,7 +209,31 @@ export default function Home() {
         </div>
       </section>
 
-      <CtaBanner />
+      {/* Results — pending real client testimonials; never fabricate these. */}
+      <section className="border-t border-border">
+        <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
+          <Reveal>
+            <h2 className="font-heading text-3xl font-medium tracking-tight">
+              What clients say
+            </h2>
+            <div className="mt-8 rounded-2xl border border-dashed border-border bg-card p-8 text-center">
+              <p className="text-sm text-muted-foreground">
+                Client testimonials to be added here — three short quotes,
+                pulled from real client feedback with their written
+                permission to publish. Placeholder only; nothing here is
+                invented.
+              </p>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      <FaqSection />
+
+      <CtaBanner
+        title="Talk to Pradeep Directly"
+        body="Reach the 24/7 helpline directly, or send details through the contact form and hear back promptly."
+      />
     </>
   );
 }
