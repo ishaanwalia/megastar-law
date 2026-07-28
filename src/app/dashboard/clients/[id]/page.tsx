@@ -43,7 +43,7 @@ export default async function ClientDetailPage({
     <div className="max-w-3xl">
       <Link
         href="/dashboard/clients"
-        className="text-sm text-muted-foreground hover:text-gold"
+        className="text-sm text-muted-foreground hover:text-brand"
       >
         &larr; All Leads &amp; Clients
       </Link>

@@ -16,7 +16,7 @@ export default function AboutPage() {
   return (
     <>
       <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-24">
-        <p className="text-sm font-medium tracking-wide text-gold uppercase">
+        <p className="text-sm font-medium tracking-wide text-brand uppercase">
           About the firm
         </p>
         <h1 className="mt-3 max-w-2xl font-heading text-4xl font-medium tracking-tight sm:text-5xl">
@@ -121,7 +121,7 @@ export default function AboutPage() {
               "24/7 legal helpline for genuine emergencies",
             ].map((item) => (
               <li key={item} className="flex items-start gap-2.5 text-sm">
-                <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-gold" />
+                <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-brand" />
                 {item}
               </li>
             ))}

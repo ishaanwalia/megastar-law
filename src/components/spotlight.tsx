@@ -60,7 +60,7 @@ export function Spotlight({
     >
       <motion.div
         aria-hidden
-        className="pointer-events-none absolute z-10 size-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold/25 blur-3xl"
+        className="pointer-events-none absolute z-10 size-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand/25 blur-3xl"
         style={{ left: x, top: y, opacity }}
       />
       {children}

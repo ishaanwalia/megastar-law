@@ -1,18 +1,28 @@
 import Link from "next/link";
 import { ArrowRight, Clock, ShieldCheck, Scale, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Reveal } from "@/components/reveal";
 import { CtaBanner } from "@/components/cta-banner";
 import { PhotoPlaceholder } from "@/components/photo-placeholder";
 import { FaqSection } from "@/components/faq-section";
-import { Spotlight } from "@/components/spotlight";
 import { StatNumber } from "@/components/stat-number";
-import { HeroShader } from "@/components/hero-shader";
-import { ParallaxFloat } from "@/components/parallax-float";
+import { GlassHeroBg } from "@/components/glass-hero-bg";
+import { StickyPracticeCards } from "@/components/sticky-practice-cards";
 import { Marquee } from "@/components/marquee";
 import { firm, advocates, practiceAreas } from "@/lib/firm-data";
+
+// Third-party CDN clip, standing in until the firm supplies its own footage.
+// It is never shown directly — the shader reads its luminance only — so the
+// hero survives the URL going away (it just loses the motion layer).
+const heroClip =
+  "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260715_090628_7052d8a6-a094-4341-a4a2-ad58493a67a9.mp4";
+
+const heroPanelLinks = [
+  { label: "Personalized", href: "/why-us" },
+  { label: "Experienced", href: "/about" },
+  { label: "Available 24/7", href: "/contact" },
+];
 
 const credentialTicker = [
   "Punjab & Haryana High Court",
@@ -26,9 +36,9 @@ const credentialTicker = [
 const pradeep = advocates[0];
 
 const accentClasses = {
-  gold: "border-t-gold",
-  ledger: "border-t-ledger",
-  oxblood: "border-t-oxblood",
+  brand: "border-t-brand",
+  ink: "border-t-ink",
+  slate: "border-t-slate",
 } as const;
 
 type Stat =
@@ -41,28 +51,28 @@ type Stat =
   | { display: string; label: string; accent: keyof typeof accentClasses };
 
 const stats: Stat[] = [
-  { value: 15, suffix: "+", label: "Years practicing, civil & criminal", accent: "gold" },
-  { value: 2011, label: "Enrolled, Punjab & Haryana Bar", accent: "ledger" },
-  { value: 7, label: "Practice areas covered", accent: "oxblood" },
-  { display: "24/7", label: "Legal helpline", accent: "gold" },
+  { value: 15, suffix: "+", label: "Years practicing, civil & criminal", accent: "brand" },
+  { value: 2011, label: "Enrolled, Punjab & Haryana Bar", accent: "ink" },
+  { value: 7, label: "Practice areas covered", accent: "slate" },
+  { display: "24/7", label: "Legal helpline", accent: "brand" },
 ];
 
 const values = [
   {
     icon: ShieldCheck,
-    color: "text-gold",
+    color: "text-brand",
     title: "Personalized Attention",
     body: "Every case is handled with focus on your specific concerns, not run through an assembly line of associates.",
   },
   {
     icon: Scale,
-    color: "text-oxblood",
+    color: "text-slate",
     title: "Settlement & Courtroom Experience",
     body: "Solutions weighed on their merits — negotiated settlements where they serve you, full courtroom representation where they don't.",
   },
   {
     icon: Clock,
-    color: "text-ledger",
+    color: "text-ink",
     title: "24/7 Legal Helpline",
     body: "Legal issues don't wait for office hours. Reach the firm directly, any time, at " + firm.helpline + ".",
   },
@@ -71,53 +81,92 @@ const values = [
 export default function Home() {
   return (
     <>
-      {/* Hero — stays on the site's own day-theme ground. The shader is a
-          pale, mostly-parchment marbled wash (not a dark backdrop); the
-          H1/subhead have zero animation, so LCP paint is untouched. */}
-      <section className="relative overflow-hidden bg-background">
-        <HeroShader className="opacity-90" />
+      {/* Hero — one full-viewport composition. The background is a single
+          WebGL pass: source clip boomeranged, refracted through fluted glass,
+          with a teal bloom trailing the cursor. Foreground is ink on ivory
+          and carries ZERO entrance animation, so LCP paint is untouched. */}
+      {/* -mt-18 pulls the section up under the sticky header (h-18) so the
+          shader runs full-bleed behind the nav; pt-18 puts the content back. */}
+      <section className="relative -mt-18 flex min-h-[100svh] flex-col overflow-hidden bg-background pt-18">
+        <GlassHeroBg videoSrc={heroClip} />
 
-        <div className="relative z-10 mx-auto grid max-w-6xl gap-10 px-4 py-20 sm:px-6 md:grid-cols-2 md:py-28">
-          <div>
-            <p className="text-sm font-medium tracking-wide text-gold uppercase">
-              Advocates &middot; Chandigarh
-            </p>
-            <h1 className="mt-4 font-heading text-4xl leading-[1.05] font-medium tracking-tight sm:text-5xl md:text-6xl">
-              Clear counsel. Committed representation.
-            </h1>
-            <p className="mt-6 max-w-lg text-lg text-muted-foreground">
-              Megastar Law Associates prioritizes quality over quantity —
-              personalized attention and dedicated care for every client,
-              across criminal, civil, family, corporate and arbitration
-              matters.
-            </p>
-            <div className="mt-8 flex flex-wrap items-center gap-4">
-              <Button
-                size="lg"
-                render={<Link href="/contact" />}
-                nativeButton={false}
-                className="btn-sheen bg-gold text-gold-foreground hover:bg-gold/90"
-              >
-                Speak With an Advocate Today
-                <ArrowRight className="size-4" />
-              </Button>
-              <a
-                href={`tel:${firm.helpline.replace(/\s/g, "")}`}
-                className="flex items-center gap-2 text-sm font-medium hover:text-gold"
-              >
-                <Phone className="size-4" />
-                {firm.helplineLabel}: {firm.helpline}
-              </a>
+        <div className="relative z-10 mx-auto w-full max-w-6xl px-4 pt-14 sm:px-6 md:pt-20">
+          <p className="text-xs font-medium tracking-[0.25em] text-brand uppercase">
+            Advocates &middot; Chandigarh
+          </p>
+          <h1 className="mt-5 max-w-4xl font-heading text-4xl leading-[1.02] font-medium tracking-tight text-balance sm:text-6xl md:text-7xl">
+            Clear counsel.{" "}
+            <em className="font-normal text-brand italic">
+              Committed representation.
+            </em>
+          </h1>
+          <p className="mt-6 max-w-lg text-base leading-relaxed text-muted-foreground md:text-lg">
+            Megastar Law Associates prioritizes quality over quantity —
+            personalized attention and dedicated care for every client, across
+            criminal, civil, family, corporate and arbitration matters.
+          </p>
+          <div className="mt-8 flex flex-wrap items-center gap-4">
+            <Button
+              size="lg"
+              render={<Link href="/contact" />}
+              nativeButton={false}
+              className="btn-sheen bg-primary text-primary-foreground hover:bg-primary/90"
+            >
+              Speak With an Advocate Today
+              <ArrowRight className="size-4" />
+            </Button>
+            <a
+              href={`tel:${firm.helpline.replace(/\s/g, "")}`}
+              className="flex items-center gap-2 text-sm font-medium transition-colors hover:text-brand"
+            >
+              <Phone className="size-4" />
+              {firm.helplineLabel}: {firm.helpline}
+            </a>
+          </div>
+        </div>
+
+        {/* Glass panel anchored to the bottom edge of the first viewport —
+            flush, no bottom border, so it reads as the floor of the hero. */}
+        <div className="relative z-10 mx-auto mt-auto w-full max-w-5xl px-4 pt-16 sm:px-6">
+          <div className="border border-b-0 border-border/70 bg-card/80 px-5 pt-8 pb-0 shadow-sm backdrop-blur-md sm:px-8 sm:pt-10 md:px-10 md:pt-12">
+            <div className="grid gap-6 md:grid-cols-2 md:gap-14">
+              <div>
+                <p className="text-[11px] font-medium tracking-[0.2em] text-muted-foreground uppercase">
+                  What do we do?
+                </p>
+                <h2 className="mt-3 font-heading text-2xl leading-tight font-medium tracking-tight sm:text-3xl md:text-4xl">
+                  Counsel that
+                  <br className="hidden sm:block" /> holds up in court
+                </h2>
+              </div>
+              <p className="self-end text-sm leading-relaxed text-muted-foreground md:text-[15px]">
+                Litigation and advisory work for individuals, NRIs, corporates
+                and banks — argued before the Punjab &amp; Haryana High Court,
+                the District Courts at Chandigarh, NCLT, DRT and consumer fora.
+              </p>
+            </div>
+
+            <div className="mt-6 h-px w-full bg-border sm:mt-8 md:mt-10" />
+
+            <div className="grid gap-2 py-5 sm:grid-cols-3 sm:gap-3">
+              {heroPanelLinks.map((item, i) => (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  className="group flex items-center justify-between bg-secondary/70 px-4 py-3.5 transition-colors duration-200 hover:bg-secondary sm:px-6 sm:py-4"
+                >
+                  <span className="text-sm">
+                    <span className="text-muted-foreground/70 tabular-nums">
+                      0{i + 1}
+                    </span>
+                    <span className="mx-2 text-muted-foreground/50">/</span>
+                    <span className="font-medium">{item.label}</span>
+                  </span>
+                  <ArrowRight className="size-4 text-muted-foreground/60 transition-all duration-200 group-hover:translate-x-0.5 group-hover:text-foreground" />
+                </Link>
+              ))}
             </div>
           </div>
-
-          <ParallaxFloat distance={40}>
-            <PhotoPlaceholder
-              label={`Photo needed: ${pradeep.name}`}
-              hint="Professional headshot or a Punjab & Haryana High Court exterior shot — the first thing a visitor sees."
-              className="w-full from-primary via-oxblood/50 to-gold/50"
-            />
-          </ParallaxFloat>
         </div>
       </section>
 
@@ -132,7 +181,7 @@ export default function Home() {
           {stats.map((s) => (
             <div
               key={s.label}
-              className={`flex flex-col items-center justify-center gap-1 rounded-2xl border border-t-2 border-gold/25 ${accentClasses[s.accent]} bg-card/70 px-4 py-6 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.6),0_16px_40px_-20px_rgba(0,0,0,0.2)] backdrop-blur-md`}
+              className={`flex flex-col items-center justify-center gap-1 rounded-2xl border border-t-2 border-brand/25 ${accentClasses[s.accent]} bg-card/70 px-4 py-6 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.6),0_16px_40px_-20px_rgba(0,0,0,0.2)] backdrop-blur-md`}
             >
               <dt className="font-mono text-2xl font-medium tabular-nums">
                 {"value" in s ? (
@@ -155,29 +204,14 @@ export default function Home() {
             </h2>
             <Link
               href="/practice-areas"
-              className="flex items-center gap-1 text-sm font-medium text-gold hover:underline"
+              className="flex items-center gap-1 text-sm font-medium text-brand hover:underline"
             >
               View all <ArrowRight className="size-3.5" />
             </Link>
           </div>
         </Reveal>
-        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {practiceAreas.map((area, i) => (
-            <Reveal key={area.slug} delay={(i % 3) * 0.08}>
-              <Spotlight className="h-full rounded-xl">
-                <Link href={`/practice-areas/${area.slug}`} className="block h-full">
-                  <Card className="h-full p-6 transition-colors hover:border-gold/50">
-                    <h3 className="font-heading text-lg font-medium">
-                      {area.title}
-                    </h3>
-                    <p className="mt-2 text-sm text-muted-foreground">
-                      {area.summary}
-                    </p>
-                  </Card>
-                </Link>
-              </Spotlight>
-            </Reveal>
-          ))}
+        <div className="mt-10">
+          <StickyPracticeCards areas={practiceAreas} />
         </div>
       </section>
 
@@ -186,10 +220,10 @@ export default function Home() {
         <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
           <Reveal>
             <div className="grid gap-12 md:grid-cols-2 md:items-start">
-              <blockquote className="relative border-l-2 border-oxblood pl-6">
+              <blockquote className="relative border-l-2 border-slate pl-6">
                 <span
                   aria-hidden
-                  className="pointer-events-none absolute -top-8 left-2 font-heading text-8xl text-oxblood/15 select-none"
+                  className="pointer-events-none absolute -top-8 left-2 font-heading text-8xl text-slate/15 select-none"
                 >
                   &rdquo;
                 </span>
@@ -234,7 +268,7 @@ export default function Home() {
                 className="w-32 shrink-0"
               />
               <div>
-                <p className="text-sm font-medium tracking-wide text-gold uppercase">
+                <p className="text-sm font-medium tracking-wide text-brand uppercase">
                   Founder
                 </p>
                 <div className="mt-3 flex flex-wrap items-center gap-3">
@@ -243,7 +277,7 @@ export default function Home() {
                   </h2>
                   <Badge
                     variant="outline"
-                    className="border-ledger/40 text-ledger"
+                    className="border-ink/40 text-ink"
                   >
                     Bar Enrollment {pradeep.enrollment}
                   </Badge>

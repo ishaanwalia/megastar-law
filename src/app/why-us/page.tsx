@@ -23,35 +23,35 @@ const pillars = [
   {
     key: "quality",
     icon: UserCheck,
-    color: "text-gold",
+    color: "text-brand",
     title: "Quality over quantity",
     body: "Every matter gets direct attention from the advocate handling it — not routed through layers of associates. We'd rather take on fewer matters and give each one the focus it needs.",
   },
   {
     key: "settlement",
     icon: Scale,
-    color: "text-oxblood",
+    color: "text-slate",
     title: "Settlement and courtroom experience, both",
     body: "Not every dispute belongs in court, and not every dispute can be settled. We weigh both paths on their merits and push for whichever actually serves your outcome — with the courtroom experience to follow through when settlement isn't realistic.",
   },
   {
     key: "nri",
     icon: Globe2,
-    color: "text-ledger",
+    color: "text-ink",
     title: "NRI-specific experience",
     body: "We regularly act for NRI clients on Section 498A matters, where being abroad makes unfamiliar Indian procedure, distance and timezones a real obstacle. We work around that directly, so distance isn't a barrier to a proper defense.",
   },
   {
     key: "helpline",
     icon: Clock,
-    color: "text-gold",
+    color: "text-brand",
     title: "24/7 legal helpline",
     body: `Legal problems don't confine themselves to office hours. Reach the firm directly, any time, at ${firm.helpline}.`,
   },
   {
     key: "access",
     icon: ShieldCheck,
-    color: "text-oxblood",
+    color: "text-slate",
     title: "Direct access to your advocate",
     body: "You deal with the advocate handling your matter, not a rotating cast of juniors — from the first consultation through to resolution.",
   },
@@ -61,7 +61,7 @@ export default function WhyUsPage() {
   return (
     <>
       <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-24">
-        <p className="text-sm font-medium tracking-wide text-gold uppercase">
+        <p className="text-sm font-medium tracking-wide text-brand uppercase">
           Why Megastar
         </p>
         <h1 className="mt-3 max-w-2xl font-heading text-4xl font-medium tracking-tight sm:text-5xl">
@@ -81,7 +81,7 @@ export default function WhyUsPage() {
             {pillars.map((p, i) => (
               <Reveal key={p.key} delay={(i % 2) * 0.1}>
                 <Spotlight className="h-full rounded-xl">
-                  <Card className="h-full p-6 transition-colors hover:border-gold/50">
+                  <Card className="h-full p-6 transition-colors hover:border-brand/50">
                     <p.icon className={`size-6 ${p.color}`} />
                     <h2 className="mt-4 font-heading text-lg font-medium">
                       {p.title}

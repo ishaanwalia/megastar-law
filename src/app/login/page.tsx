@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default function LoginPage() {
   return (
     <section className="mx-auto flex min-h-[70vh] max-w-sm flex-col justify-center px-4 py-16">
-      <p className="text-sm font-medium tracking-wide text-gold uppercase">
+      <p className="text-sm font-medium tracking-wide text-brand uppercase">
         Megastar Law Associates
       </p>
       <h1 className="mt-2 font-heading text-2xl font-medium tracking-tight">

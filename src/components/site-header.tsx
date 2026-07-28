@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -20,9 +20,26 @@ import { cn } from "@/lib/utils";
 export function SiteHeader() {
   const pathname = usePathname();
   const [practiceOpen, setPracticeOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  // Transparent at the very top so the hero's glass reads edge-to-edge, then
+  // frosts once the page moves under it.
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border/70 bg-background/90 backdrop-blur-sm">
+    <header
+      className={cn(
+        "sticky top-0 z-40 border-b transition-colors duration-300",
+        scrolled
+          ? "border-border/70 bg-background/90 backdrop-blur-sm"
+          : "border-transparent bg-transparent"
+      )}
+    >
       <div className="mx-auto flex h-18 max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
         <Link href="/" className="flex items-center gap-2.5">
           <Image
@@ -56,7 +73,7 @@ export function SiteHeader() {
                   href={item.href}
                   className={cn(
                     "nav-link rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-muted",
-                    pathname.startsWith(item.href) && "text-gold"
+                    pathname.startsWith(item.href) && "text-brand"
                   )}
                 >
                   {item.title}
@@ -86,7 +103,7 @@ export function SiteHeader() {
                 href={item.href}
                 className={cn(
                   "nav-link rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-muted",
-                  pathname === item.href && "text-gold"
+                  pathname === item.href && "text-brand"
                 )}
               >
                 {item.title}
@@ -98,7 +115,7 @@ export function SiteHeader() {
         <div className="hidden items-center gap-3 md:flex">
           <a
             href={`tel:${firm.helpline.replace(/\s/g, "")}`}
-            className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-gold"
+            className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-brand"
           >
             <Phone className="size-3.5" />
             {firm.helpline}

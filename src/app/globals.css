@@ -10,12 +10,12 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-fraunces);
-  --color-gold: var(--gold);
-  --color-gold-foreground: var(--gold-foreground);
-  --color-ledger: var(--ledger);
-  --color-ledger-foreground: var(--ledger-foreground);
-  --color-oxblood: var(--oxblood);
-  --color-oxblood-foreground: var(--oxblood-foreground);
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-ink: var(--ink);
+  --color-ink-foreground: var(--ink-foreground);
+  --color-slate: var(--slate);
+  --color-slate-foreground: var(--slate-foreground);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -54,85 +54,90 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/* Modern editorial palette (client-supplied swatch sheet).
+   Soft Charcoal #1F2A33 · Muted Teal #3A6B6B · Soft Ivory #F8F5F0
+   Deep Charcoal #12181E · Near Black #161616 · Muted Slate #5C6B7A
+   The three brand tokens map: brand = teal (accent), ink = soft charcoal,
+   slate = muted slate. Everything else is derived from ivory/near-black. */
 :root {
-  --background: oklch(0.98 0.008 85);
-  --foreground: oklch(0.22 0.015 50);
-  --card: oklch(1 0.004 85);
-  --card-foreground: oklch(0.22 0.015 50);
-  --popover: oklch(1 0.004 85);
-  --popover-foreground: oklch(0.22 0.015 50);
-  --primary: oklch(0.22 0.015 50);
-  --primary-foreground: oklch(0.98 0.008 85);
-  --secondary: oklch(0.94 0.012 80);
-  --secondary-foreground: oklch(0.22 0.015 50);
-  --muted: oklch(0.94 0.012 80);
-  --muted-foreground: oklch(0.48 0.02 55);
-  --accent: oklch(0.94 0.012 80);
-  --accent-foreground: oklch(0.22 0.015 50);
+  --background: #f8f5f0;
+  --foreground: #161616;
+  --card: #fdfbf8;
+  --card-foreground: #161616;
+  --popover: #fdfbf8;
+  --popover-foreground: #161616;
+  --primary: #1f2a33;
+  --primary-foreground: #f8f5f0;
+  --secondary: #eeeae3;
+  --secondary-foreground: #1f2a33;
+  --muted: #eeeae3;
+  --muted-foreground: #5c6b7a;
+  --accent: #eeeae3;
+  --accent-foreground: #1f2a33;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.88 0.015 75);
-  --input: oklch(0.88 0.015 75);
-  --ring: oklch(0.68 0.1 75);
-  --gold: oklch(0.52 0.13 73);
-  --gold-foreground: oklch(0.18 0.02 50);
-  --ledger: oklch(0.32 0.05 155);
-  --ledger-foreground: oklch(0.98 0.008 85);
-  --oxblood: oklch(0.34 0.11 18);
-  --oxblood-foreground: oklch(0.97 0.01 85);
-  --chart-1: oklch(0.68 0.12 75);
-  --chart-2: oklch(0.556 0.02 50);
-  --chart-3: oklch(0.439 0.02 50);
-  --chart-4: oklch(0.371 0.02 50);
-  --chart-5: oklch(0.269 0.02 50);
+  --border: #e0dad1;
+  --input: #e0dad1;
+  --ring: #3a6b6b;
+  --brand: #3a6b6b;
+  --brand-foreground: #f8f5f0;
+  --ink: #1f2a33;
+  --ink-foreground: #f8f5f0;
+  --slate: #5c6b7a;
+  --slate-foreground: #f8f5f0;
+  --chart-1: #3a6b6b;
+  --chart-2: #5c6b7a;
+  --chart-3: #1f2a33;
+  --chart-4: #7f9490;
+  --chart-5: #9aa7b2;
   --radius: 0.5rem;
-  --sidebar: oklch(0.98 0.008 85);
-  --sidebar-foreground: oklch(0.22 0.015 50);
-  --sidebar-primary: oklch(0.22 0.015 50);
-  --sidebar-primary-foreground: oklch(0.98 0.008 85);
-  --sidebar-accent: oklch(0.94 0.012 80);
-  --sidebar-accent-foreground: oklch(0.22 0.015 50);
-  --sidebar-border: oklch(0.88 0.015 75);
-  --sidebar-ring: oklch(0.68 0.1 75);
+  --sidebar: #f8f5f0;
+  --sidebar-foreground: #161616;
+  --sidebar-primary: #1f2a33;
+  --sidebar-primary-foreground: #f8f5f0;
+  --sidebar-accent: #eeeae3;
+  --sidebar-accent-foreground: #1f2a33;
+  --sidebar-border: #e0dad1;
+  --sidebar-ring: #3a6b6b;
 }
 
 .dark {
-  --background: oklch(0.19 0.018 45);
-  --foreground: oklch(0.96 0.01 85);
-  --card: oklch(0.23 0.018 45);
-  --card-foreground: oklch(0.96 0.01 85);
-  --popover: oklch(0.23 0.018 45);
-  --popover-foreground: oklch(0.96 0.01 85);
-  --primary: oklch(0.96 0.01 85);
-  --primary-foreground: oklch(0.19 0.018 45);
-  --secondary: oklch(0.28 0.02 45);
-  --secondary-foreground: oklch(0.96 0.01 85);
-  --muted: oklch(0.28 0.02 45);
-  --muted-foreground: oklch(0.7 0.02 75);
-  --accent: oklch(0.28 0.02 45);
-  --accent-foreground: oklch(0.96 0.01 85);
+  --background: #12181e;
+  --foreground: #f8f5f0;
+  --card: #1f2a33;
+  --card-foreground: #f8f5f0;
+  --popover: #1f2a33;
+  --popover-foreground: #f8f5f0;
+  --primary: #f8f5f0;
+  --primary-foreground: #12181e;
+  --secondary: #263139;
+  --secondary-foreground: #f8f5f0;
+  --muted: #263139;
+  --muted-foreground: #9aabb8;
+  --accent: #263139;
+  --accent-foreground: #f8f5f0;
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 12%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.75 0.13 78);
-  --gold: oklch(0.75 0.13 78);
-  --gold-foreground: oklch(0.18 0.02 50);
-  --ledger: oklch(0.7 0.08 155);
-  --ledger-foreground: oklch(0.18 0.02 50);
-  --oxblood: oklch(0.58 0.14 18);
-  --oxblood-foreground: oklch(0.18 0.02 50);
-  --chart-1: oklch(0.75 0.13 78);
-  --chart-2: oklch(0.7 0.02 75);
-  --chart-3: oklch(0.556 0.02 50);
-  --chart-4: oklch(0.439 0.02 50);
-  --chart-5: oklch(0.371 0.02 50);
-  --sidebar: oklch(0.19 0.018 45);
-  --sidebar-foreground: oklch(0.96 0.01 85);
-  --sidebar-primary: oklch(0.75 0.13 78);
-  --sidebar-primary-foreground: oklch(0.19 0.018 45);
-  --sidebar-accent: oklch(0.28 0.02 45);
-  --sidebar-accent-foreground: oklch(0.96 0.01 85);
+  --ring: #6ba5a5;
+  --brand: #6ba5a5;
+  --brand-foreground: #12181e;
+  --ink: #c3d0da;
+  --ink-foreground: #12181e;
+  --slate: #9aabb8;
+  --slate-foreground: #12181e;
+  --chart-1: #6ba5a5;
+  --chart-2: #9aabb8;
+  --chart-3: #c3d0da;
+  --chart-4: #4d7f7f;
+  --chart-5: #5c6b7a;
+  --sidebar: #12181e;
+  --sidebar-foreground: #f8f5f0;
+  --sidebar-primary: #6ba5a5;
+  --sidebar-primary-foreground: #12181e;
+  --sidebar-accent: #263139;
+  --sidebar-accent-foreground: #f8f5f0;
   --sidebar-border: oklch(1 0 0 / 12%);
-  --sidebar-ring: oklch(0.75 0.13 78);
+  --sidebar-ring: #6ba5a5;
 }
 
 @layer base {
@@ -197,7 +202,7 @@ body::before {
     right: 0.75rem;
     bottom: 0.3rem;
     height: 2px;
-    background: var(--gold);
+    background: var(--brand);
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 0.25s ease;
@@ -228,16 +233,15 @@ body::before {
     transform: translateX(120%);
   }
 
-  /* Gold-leaf shimmer, not a hue rotation — a warm highlight sweeping
-     through the same gold, like light catching foil lettering. Mixing in
-     distinct dark hues (oxblood/ledger) here read muddy; keeping it to one
-     family with a single bright pop is what actually reads premium. */
+  /* Single-family shimmer, not a hue rotation — a light highlight sweeping
+     through the same teal. Mixing in distinct dark hues (slate/ink) here
+     read muddy; one family with a single bright pop reads premium. */
   .gradient-text {
     background-image: linear-gradient(
       100deg,
-      var(--gold),
-      color-mix(in oklch, var(--gold), white 65%) 50%,
-      var(--gold)
+      var(--brand),
+      color-mix(in oklch, var(--brand), white 65%) 50%,
+      var(--brand)
     );
     background-size: 280% 100%;
     background-clip: text;
@@ -259,10 +263,10 @@ body::before {
 @layer utilities {
   /* Signature photography treatment (see design-direction audit, Exhibit B):
      every real photo on the site should render through this once supplied,
-     so imagery reads as one deliberate ink+gold system rather than mixed
-     full-color stock. Preview it now on placeholders via --placeholder-wash. */
+     so imagery reads as one deliberate charcoal+teal system rather than
+     mixed full-color stock. Hue-rotated off sepia into the teal band. */
   .photo-duotone {
     filter: grayscale(1) contrast(1.05)
-      sepia(0.35) saturate(2.2) hue-rotate(-6deg) brightness(0.96);
+      sepia(0.4) saturate(1.6) hue-rotate(125deg) brightness(0.97);
   }
 }

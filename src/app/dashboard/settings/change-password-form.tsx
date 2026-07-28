@@ -64,7 +64,7 @@ export function ChangePasswordForm() {
           <p className="text-sm text-destructive">{state.message}</p>
         )}
         {state.status === "success" && (
-          <p className="flex items-center gap-1.5 text-sm text-gold">
+          <p className="flex items-center gap-1.5 text-sm text-brand">
             <CheckCircle2 className="size-4" /> Password updated.
           </p>
         )}

@@ -21,12 +21,12 @@ type ContactNotificationEmailProps = {
 };
 
 const colors = {
-  ink: "#211914",
-  cream: "#fbf8f2",
-  card: "#ffffff",
-  border: "#e4dccf",
-  muted: "#675b53",
-  gold: "#955a00",
+  ink: "#1f2a33",
+  cream: "#f8f5f0",
+  card: "#fdfbf8",
+  border: "#e0dad1",
+  muted: "#5c6b7a",
+  brand: "#3a6b6b",
 };
 
 export function ContactNotificationEmail({
@@ -174,7 +174,7 @@ export function ContactNotificationEmail({
                   <Text
                     style={{
                       fontSize: 15,
-                      color: colors.gold,
+                      color: colors.brand,
                       margin: "2px 0 0",
                       fontWeight: 600,
                     }}

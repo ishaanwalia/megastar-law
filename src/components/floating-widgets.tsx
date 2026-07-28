@@ -44,7 +44,7 @@ export function FloatingWidgets() {
               This site uses privacy-friendly, cookieless analytics to
               understand how pages are used. No personal data is sold or
               shared. See our{" "}
-              <Link href="/privacy" className="underline hover:text-gold">
+              <Link href="/privacy" className="underline hover:text-brand">
                 Privacy Policy
               </Link>{" "}
               for details.

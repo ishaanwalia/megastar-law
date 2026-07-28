@@ -36,7 +36,7 @@ export function ContactForm() {
         aria-live="polite"
         className="flex flex-col items-center gap-3 rounded-xl border border-border bg-card p-10 text-center"
       >
-        <CheckCircle2 className="size-8 text-gold" />
+        <CheckCircle2 className="size-8 text-brand" />
         <h3 className="font-heading text-xl font-medium">Message sent</h3>
         <p className="max-w-sm text-sm text-muted-foreground">
           Thank you for reaching out. The firm will get back to you shortly —

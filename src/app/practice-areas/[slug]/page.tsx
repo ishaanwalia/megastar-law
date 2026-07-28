@@ -41,7 +41,7 @@ export default async function PracticeAreaPage({
       <section className="mx-auto max-w-4xl px-4 py-16 sm:px-6 md:py-24">
         <Link
           href="/practice-areas"
-          className="text-sm font-medium text-muted-foreground hover:text-gold"
+          className="text-sm font-medium text-muted-foreground hover:text-brand"
         >
           &larr; All Practice Areas
         </Link>
@@ -65,7 +65,7 @@ export default async function PracticeAreaPage({
               <ul className="mt-4 grid gap-3 sm:grid-cols-2">
                 {group.items.map((item) => (
                   <li key={item} className="flex items-start gap-2.5 text-sm">
-                    <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-gold" />
+                    <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-brand" />
                     {item}
                   </li>
                 ))}
@@ -119,7 +119,7 @@ export default async function PracticeAreaPage({
             <div className="mt-6 grid gap-4 sm:grid-cols-3">
               {related.map((r) => (
                 <Link key={r.slug} href={`/practice-areas/${r.slug}`}>
-                  <Card className="h-full p-5 transition-colors hover:border-gold/50">
+                  <Card className="h-full p-5 transition-colors hover:border-brand/50">
                     <div className="text-sm font-medium">{r.title}</div>
                   </Card>
                 </Link>

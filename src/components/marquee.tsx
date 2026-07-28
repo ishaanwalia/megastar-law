@@ -24,7 +24,7 @@ export function Marquee({
             className="flex items-center gap-3 px-6 text-sm font-medium text-muted-foreground whitespace-nowrap"
           >
             {item}
-            <span aria-hidden className="text-gold">
+            <span aria-hidden className="text-brand">
               &middot;
             </span>
           </span>

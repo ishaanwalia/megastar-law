@@ -44,7 +44,7 @@ export default async function ClientsPage() {
                 <td className="px-4 py-2.5">
                   <Link
                     href={`/dashboard/clients/${client.id}`}
-                    className="font-medium hover:text-gold"
+                    className="font-medium hover:text-brand"
                   >
                     {client.full_name}
                   </Link>

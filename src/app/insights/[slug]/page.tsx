@@ -42,7 +42,7 @@ export default async function InsightPage({
       <section className="mx-auto max-w-3xl px-4 py-16 sm:px-6 md:py-24">
         <Link
           href="/insights"
-          className="text-sm font-medium text-muted-foreground hover:text-gold"
+          className="text-sm font-medium text-muted-foreground hover:text-brand"
         >
           &larr; All Insights
         </Link>
@@ -97,7 +97,7 @@ export default async function InsightPage({
             This article is for general information only and does not
             constitute legal advice. Every matter turns on its own facts —
             see our{" "}
-            <Link href="/disclaimer" className="underline hover:text-gold">
+            <Link href="/disclaimer" className="underline hover:text-brand">
               disclaimer
             </Link>
             , and speak to the firm directly about your specific situation.
@@ -131,7 +131,7 @@ export default async function InsightPage({
             <div className="mt-6 grid gap-4 sm:grid-cols-3">
               {related.map((r) => (
                 <Link key={r.slug} href={`/insights/${r.slug}`}>
-                  <Card className="h-full p-5 transition-colors hover:border-gold/50">
+                  <Card className="h-full p-5 transition-colors hover:border-brand/50">
                     <div className="text-sm font-medium">{r.title}</div>
                   </Card>
                 </Link>

@@ -14,7 +14,7 @@ export default function ContactPage() {
   return (
     <>
       <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-24">
-        <p className="text-sm font-medium tracking-wide text-gold uppercase">
+        <p className="text-sm font-medium tracking-wide text-brand uppercase">
           Get in touch
         </p>
         <h1 className="mt-3 max-w-2xl font-heading text-4xl font-medium tracking-tight sm:text-5xl">
@@ -28,11 +28,11 @@ export default function ContactPage() {
         <div className="mt-12 grid gap-10 lg:grid-cols-[1fr_1.2fr]">
           <div>
             <div className="flex flex-col gap-6">
-              <div className="rounded-xl border border-gold/30 bg-gold/10 p-5">
+              <div className="rounded-xl border border-brand/30 bg-brand/10 p-5">
                 <div className="text-sm font-medium">{firm.helplineLabel}</div>
                 <a
                   href={`tel:${firm.helpline.replace(/\s/g, "")}`}
-                  className="mt-1 flex items-center gap-2 font-heading text-2xl font-medium hover:text-gold"
+                  className="mt-1 flex items-center gap-2 font-heading text-2xl font-medium hover:text-brand"
                 >
                   <Phone className="size-5" /> {firm.helpline}
                 </a>
@@ -40,7 +40,7 @@ export default function ContactPage() {
 
               <a
                 href={`mailto:${firm.email}`}
-                className="flex items-center gap-2 text-sm hover:text-gold"
+                className="flex items-center gap-2 text-sm hover:text-brand"
               >
                 <Mail className="size-4" /> {firm.email}
               </a>
@@ -48,7 +48,7 @@ export default function ContactPage() {
               <div className="flex flex-col gap-4">
                 {offices.map((office) => (
                   <div key={office.label} className="flex gap-3">
-                    <MapPin className="mt-0.5 size-4 shrink-0 text-gold" />
+                    <MapPin className="mt-0.5 size-4 shrink-0 text-brand" />
                     <div>
                       <div className="text-sm font-medium">{office.label}</div>
                       <div className="text-sm text-muted-foreground">

@@ -45,7 +45,7 @@ export default async function MattersPage() {
                 <td className="px-4 py-2.5">
                   <Link
                     href={`/dashboard/matters/${matter.id}`}
-                    className="font-medium hover:text-gold"
+                    className="font-medium hover:text-brand"
                   >
                     {matter.clients?.full_name ?? "—"}
                   </Link>

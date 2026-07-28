@@ -70,7 +70,7 @@ export default async function DashboardOverviewPage() {
             </h2>
             <Link
               href="/dashboard/clients"
-              className="text-sm text-gold hover:underline"
+              className="text-sm text-brand hover:underline"
             >
               View all
             </Link>
@@ -101,7 +101,7 @@ export default async function DashboardOverviewPage() {
             </h2>
             <Link
               href="/dashboard/appointments"
-              className="text-sm text-gold hover:underline"
+              className="text-sm text-brand hover:underline"
             >
               View all
             </Link>

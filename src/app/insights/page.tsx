@@ -17,7 +17,7 @@ export default function InsightsPage() {
   return (
     <>
       <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-24">
-        <p className="text-sm font-medium tracking-wide text-gold uppercase">
+        <p className="text-sm font-medium tracking-wide text-brand uppercase">
           Insights
         </p>
         <h1 className="mt-3 max-w-2xl font-heading text-4xl font-medium tracking-tight sm:text-5xl">
@@ -27,7 +27,7 @@ export default function InsightsPage() {
           Notes on procedure and practice from the firm — for general
           information only, not a substitute for advice on your specific
           matter. See our{" "}
-          <Link href="/disclaimer" className="underline hover:text-gold">
+          <Link href="/disclaimer" className="underline hover:text-brand">
             disclaimer
           </Link>
           .
@@ -37,7 +37,7 @@ export default function InsightsPage() {
           {insights.map((post, i) => (
             <Reveal key={post.slug} delay={(i % 2) * 0.1}>
               <Link href={`/insights/${post.slug}`} className="block h-full">
-                <Card className="h-full p-6 transition-colors hover:border-gold/50">
+                <Card className="h-full p-6 transition-colors hover:border-brand/50">
                   <Badge variant="secondary">{post.category}</Badge>
                   <h2 className="mt-3 font-heading text-xl font-medium">
                     {post.title}
@@ -45,7 +45,7 @@ export default function InsightsPage() {
                   <p className="mt-2 text-sm text-muted-foreground">
                     {post.description}
                   </p>
-                  <span className="mt-4 flex items-center gap-1 text-sm font-medium text-gold">
+                  <span className="mt-4 flex items-center gap-1 text-sm font-medium text-brand">
                     Read more <ArrowRight className="size-3.5" />
                   </span>
                 </Card>

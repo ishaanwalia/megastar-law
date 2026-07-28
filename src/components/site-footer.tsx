@@ -11,12 +11,12 @@ export function SiteFooter() {
       <div className="border-b border-border">
         <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 px-4 py-10 sm:flex-row sm:items-center sm:px-6">
           <div>
-            <p className="text-sm font-medium tracking-wide text-gold uppercase">
+            <p className="text-sm font-medium tracking-wide text-brand uppercase">
               {firm.helplineLabel}
             </p>
             <a
               href={`tel:${firm.helpline.replace(/\s/g, "")}`}
-              className="mt-1 flex items-center gap-2 font-heading text-2xl font-medium hover:text-gold"
+              className="mt-1 flex items-center gap-2 font-heading text-2xl font-medium hover:text-brand"
             >
               <Phone className="size-5" /> {firm.helpline}
             </a>
@@ -52,7 +52,7 @@ export function SiteFooter() {
           <div className="mt-4 flex flex-col gap-2 text-sm">
             <a
               href={`mailto:${firm.email}`}
-              className="flex items-center gap-2 hover:text-gold"
+              className="flex items-center gap-2 hover:text-brand"
             >
               <Mail className="size-4" /> {firm.email}
             </a>
@@ -60,7 +60,7 @@ export function SiteFooter() {
               href={`https://wa.me/${firm.whatsapp}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 hover:text-gold"
+              className="flex items-center gap-2 hover:text-brand"
             >
               <MessageCircle className="size-4" /> WhatsApp the firm
             </a>
@@ -72,7 +72,7 @@ export function SiteFooter() {
           <ul className="mt-3 flex flex-col gap-2 text-sm text-muted-foreground">
             {mainNav.map((item) => (
               <li key={item.href}>
-                <Link href={item.href} className="hover:text-gold">
+                <Link href={item.href} className="hover:text-brand">
                   {item.title}
                 </Link>
               </li>
@@ -87,7 +87,7 @@ export function SiteFooter() {
               <li key={area.slug}>
                 <Link
                   href={`/practice-areas/${area.slug}`}
-                  className="hover:text-gold"
+                  className="hover:text-brand"
                 >
                   {area.title}
                 </Link>
@@ -118,7 +118,7 @@ export function SiteFooter() {
               href="https://skiper-ui.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-gold"
+              className="hover:text-brand"
             >
               Skiper UI
             </a>
@@ -127,17 +127,17 @@ export function SiteFooter() {
               href="https://www.originkit.dev"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-gold"
+              className="hover:text-brand"
             >
               Originkit
             </a>
             .
           </span>
           <div className="flex gap-4">
-            <Link href="/disclaimer" className="hover:text-gold">
+            <Link href="/disclaimer" className="hover:text-brand">
               Disclaimer
             </Link>
-            <Link href="/privacy" className="hover:text-gold">
+            <Link href="/privacy" className="hover:text-brand">
               Privacy Policy
             </Link>
           </div>

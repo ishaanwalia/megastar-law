@@ -48,7 +48,7 @@ export default async function MatterDetailPage({
     <div className="max-w-3xl">
       <Link
         href="/dashboard/matters"
-        className="text-sm text-muted-foreground hover:text-gold"
+        className="text-sm text-muted-foreground hover:text-brand"
       >
         &larr; All Matters
       </Link>
@@ -59,7 +59,7 @@ export default async function MatterDetailPage({
             {m.practice_area ?? "Matter"} —{" "}
             <Link
               href={`/dashboard/clients/${m.clients?.id}`}
-              className="hover:text-gold"
+              className="hover:text-brand"
             >
               {m.clients?.full_name}
             </Link>
