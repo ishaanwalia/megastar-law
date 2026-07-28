@@ -248,6 +248,22 @@ body::before {
     -webkit-background-clip: text;
     color: transparent;
   }
+
+  /* Same shimmer for headings on LIGHT ground. The light-teal midpoint that
+     works on the dark CTA would fail contrast on ivory, so this one sweeps
+     ink -> teal -> ink and never gets lighter than the accent. */
+  .gradient-text-ink {
+    background-image: linear-gradient(
+      100deg,
+      var(--ink),
+      var(--brand) 50%,
+      var(--ink)
+    );
+    background-size: 280% 100%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+  }
 }
 
 @keyframes gradient-shift {

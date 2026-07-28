@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
@@ -49,6 +50,24 @@ export default async function PracticeAreaPage({
           {area.title}
         </h1>
         <p className="mt-6 text-lg text-muted-foreground">{area.summary}</p>
+
+        {/* Landscape plate between the heading and the body copy. Run through
+            the site duotone so every area reads as one charcoal+teal system
+            rather than seven unrelated stock photos. */}
+        <div className="relative mt-10 aspect-[21/9] overflow-hidden rounded-2xl border border-border">
+          <Image
+            src={`/practice/${area.slug}.jpg`}
+            alt=""
+            fill
+            sizes="(max-width: 896px) 100vw, 896px"
+            className="photo-duotone object-cover"
+            priority
+          />
+          <div
+            aria-hidden
+            className="absolute inset-0 bg-gradient-to-t from-ink/35 to-transparent"
+          />
+        </div>
 
         <Reveal delay={0.1}>
           <p className="mt-8 max-w-3xl text-base leading-relaxed text-muted-foreground">

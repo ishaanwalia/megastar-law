@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Phone } from "lucide-react";
+import { ArrowRight, Check, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/reveal";
 import { firm } from "@/lib/firm-data";
@@ -21,6 +21,19 @@ export function CtaBanner({
           <p className="mx-auto mt-3 max-w-xl text-primary-foreground/70">
             {body}
           </p>
+          <ul className="mt-6 flex flex-wrap items-center justify-center gap-2.5">
+            {["100% Confidential", "No Obligation", "Quick Response"].map(
+              (tag) => (
+                <li
+                  key={tag}
+                  className="flex items-center gap-1.5 rounded-full border border-primary-foreground/20 bg-primary-foreground/5 px-3.5 py-1.5 text-xs font-medium text-primary-foreground/80"
+                >
+                  <Check className="size-3.5 text-brand" />
+                  {tag}
+                </li>
+              )
+            )}
+          </ul>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
             <Button
               size="lg"

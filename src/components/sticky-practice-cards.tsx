@@ -14,9 +14,30 @@ import {
   useTransform,
   type MotionValue,
 } from "framer-motion";
-import { ArrowUpRight } from "lucide-react";
+import {
+  ArrowUpRight,
+  Building2,
+  FileSignature,
+  Gavel,
+  HardHat,
+  Handshake,
+  Scale,
+  Users,
+  type LucideIcon,
+} from "lucide-react";
 
 type Area = { slug: string; title: string; summary: string };
+
+// One mark per practice area; anything unmapped falls back to the scales.
+const areaIcons: Record<string, LucideIcon> = {
+  "criminal-cyber-crime": Gavel,
+  "civil-litigation": Scale,
+  "family-law": Users,
+  "corporate-banking": Building2,
+  arbitration: Handshake,
+  "labour-law": HardHat,
+  "legal-documentation": FileSignature,
+};
 
 function StickyCard({
   area,
@@ -29,6 +50,7 @@ function StickyCard({
   total: number;
   progress: MotionValue<number>;
 }) {
+  const Icon = areaIcons[area.slug] ?? Scale;
   const targetScale = 1 - (total - i - 1) * 0.04;
   const scale = useTransform(progress, [i / total, 1], [1, targetScale]);
 
@@ -36,18 +58,27 @@ function StickyCard({
     <div className="sticky top-[16vh] flex h-[62vh] items-start justify-center">
       <motion.div
         style={{ scale, top: i * 18 }}
-        className="relative w-full max-w-3xl origin-top overflow-hidden rounded-3xl border border-brand/20 bg-card/85 p-8 shadow-[inset_0_1px_0_rgba(255,255,255,0.7),0_30px_70px_-40px_rgba(31,42,51,0.55)] backdrop-blur-xl sm:p-10"
+        className="group relative w-full max-w-3xl origin-top overflow-hidden rounded-3xl border border-brand/20 bg-card/85 p-8 shadow-[inset_0_1px_0_rgba(255,255,255,0.7),0_30px_70px_-40px_rgba(31,42,51,0.55)] backdrop-blur-xl sm:p-10"
       >
         <div
           aria-hidden
           className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand/50 to-transparent"
         />
         <div className="flex items-start justify-between gap-6">
+          {/* Icon tile flips on card hover — two faces on one rotating plane,
+              so the strokes turn over rather than cross-fading. */}
+          <div className="[perspective:600px]">
+            <div className="relative size-14 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]">
+              <span className="absolute inset-0 flex items-center justify-center rounded-xl bg-slate text-slate-foreground shadow-sm [backface-visibility:hidden]">
+                <Icon className="size-6" />
+              </span>
+              <span className="absolute inset-0 flex items-center justify-center rounded-xl bg-brand text-brand-foreground shadow-sm [backface-visibility:hidden] [transform:rotateY(180deg)]">
+                <ArrowUpRight className="size-6" />
+              </span>
+            </div>
+          </div>
           <span className="font-mono text-xs tracking-[0.25em] text-brand tabular-nums">
             {String(i + 1).padStart(2, "0")}
-          </span>
-          <span className="text-[11px] tracking-[0.2em] text-muted-foreground uppercase">
-            Practice Area
           </span>
         </div>
         <h3 className="mt-6 font-heading text-2xl leading-tight font-medium tracking-tight sm:text-3xl">

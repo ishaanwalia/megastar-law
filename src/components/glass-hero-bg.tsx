@@ -1,24 +1,18 @@
 "use client";
 
-// Hero background — the three requested effects collapsed into ONE canvas
-// instead of three stacked layers:
-//   1. a source clip played as a seamless boomerang (forward, then reverse),
-//   2. fluted-glass refraction with chromatic fringing at the rib edges,
-//   3. a teal bloom that follows the cursor with momentum, plus film grain.
-// The clip is never shown directly — its luminance drives a tint between
-// ivory and charcoal, so the motion reads as our palette regardless of what
-// the footage actually looks like, and the page stays legible over it.
-// Raw WebGL, no library. Degrades to plain background if WebGL or the video
-// is unavailable; freezes entirely under prefers-reduced-motion.
+// Hero background — a single WebGL pass over the supplied glass-structure
+// still: the image is cover-fitted and drifts slowly, its luminance tints
+// between ivory and charcoal so it always reads as our palette, and the whole
+// scene is refracted through drifting fluted-glass ribs with chromatic
+// fringing, plus a teal bloom that trails the cursor with momentum and a
+// whisper of film grain. Raw WebGL, no library.
+//
+// If WebGL is unavailable the same image still shows through a CSS
+// background layer underneath the canvas, so the hero never renders blank.
+// Freezes entirely under prefers-reduced-motion.
 
 import { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
-
-// ponytail: ~3.2s of loop held in memory at 640px. Bump both only if the
-// source clip is longer AND the memory budget on mobile allows it.
-const MAX_FRAMES = 96;
-const CAPTURE_WIDTH = 640;
-const FRAME_MS = 1000 / 30;
 
 const VERTEX_SRC = `
 attribute vec2 a_position;
@@ -35,6 +29,7 @@ uniform float u_time;
 uniform vec2 u_mouse;
 uniform sampler2D u_tex;
 uniform float u_hasTex;
+uniform float u_texAspect;
 
 const vec3 IVORY = vec3(0.973, 0.961, 0.941);
 const vec3 TEAL  = vec3(0.227, 0.420, 0.420);
@@ -69,20 +64,31 @@ float fbm(vec2 p) {
   return v;
 }
 
+// Cover-fit the texture into the viewport, then drift it slowly so a still
+// image still reads as a living surface.
+vec2 coverUv(vec2 uv, float aspect) {
+  vec2 s = u_texAspect > aspect
+    ? vec2(aspect / u_texAspect, 1.0)
+    : vec2(1.0, u_texAspect / aspect);
+  vec2 c = (uv - 0.5) * s / 1.08 + 0.5;
+  c += vec2(sin(u_time * 0.035) * 0.012, cos(u_time * 0.028) * 0.012);
+  return vec2(c.x, 1.0 - c.y);
+}
+
 // Everything sitting behind the glass. The swirl value is computed once in
 // main() and passed in, so the three chromatic samples cost three texture
 // reads rather than three full fbm evaluations.
 vec3 scene(vec2 uv, float aspect, float swirl) {
   vec3 col = mix(IVORY, mix(IVORY, SLATE, 0.5), smoothstep(0.25, 0.85, swirl));
 
-  vec3 v = texture2D(u_tex, vec2(uv.x, 1.0 - uv.y)).rgb;
-  float lum = dot(v, vec3(0.299, 0.587, 0.114));
-  vec3 tinted = mix(mix(CHAR, SLATE, 0.6), IVORY, smoothstep(0.04, 0.78, lum));
-  col = mix(col, tinted, 0.5 * u_hasTex);
+  vec3 img = texture2D(u_tex, coverUv(uv, aspect)).rgb;
+  float lum = dot(img, vec3(0.299, 0.587, 0.114));
+  vec3 tinted = mix(mix(CHAR, SLATE, 0.65), IVORY, smoothstep(0.06, 0.8, lum));
+  col = mix(col, tinted, 0.72 * u_hasTex);
 
   vec2 d = (uv - u_mouse) * vec2(aspect, 1.0);
   float bloom = exp(-dot(d, d) * 3.0);
-  col = mix(col, TEAL, bloom * 0.45);
+  col = mix(col, TEAL, bloom * 0.4);
   col = mix(col, IVORY, bloom * bloom * 0.3);
   return col;
 }
@@ -135,13 +141,12 @@ function compileShader(
 
 export function GlassHeroBg({
   className,
-  videoSrc,
+  imageSrc,
 }: {
   className?: string;
-  videoSrc?: string;
+  imageSrc: string;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -164,6 +169,8 @@ export function GlassHeroBg({
     gl.linkProgram(program);
     if (!gl.getProgramParameter(program, gl.LINK_STATUS)) return;
     gl.useProgram(program);
+    // The canvas is opaque once it draws, so hide the CSS fallback beneath it.
+    canvas.style.opacity = "1";
 
     const positionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
@@ -180,9 +187,10 @@ export function GlassHeroBg({
     const timeLoc = gl.getUniformLocation(program, "u_time");
     const mouseLoc = gl.getUniformLocation(program, "u_mouse");
     const hasTexLoc = gl.getUniformLocation(program, "u_hasTex");
+    const texAspectLoc = gl.getUniformLocation(program, "u_texAspect");
 
     // Non-power-of-two source, so: clamp + linear, never mipmaps. Seeded with
-    // one ivory pixel so the first frames draw correctly before any video.
+    // one ivory pixel so the first frames draw before the image decodes.
     const texture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.texImage2D(
@@ -202,22 +210,33 @@ export function GlassHeroBg({
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     gl.uniform1i(gl.getUniformLocation(program, "u_tex"), 0);
 
+    let hasTex = 0;
+    let texAspect = 1;
+    let raf = 0;
+    let disposed = false;
+
+    const image = new Image();
+    image.decoding = "async";
+    image.src = imageSrc;
+    image.onload = () => {
+      if (disposed) return;
+      texAspect = image.naturalWidth / Math.max(1, image.naturalHeight);
+      gl.bindTexture(gl.TEXTURE_2D, texture);
+      gl.texImage2D(
+        gl.TEXTURE_2D,
+        0,
+        gl.RGB,
+        gl.RGB,
+        gl.UNSIGNED_BYTE,
+        image
+      );
+      hasTex = 1;
+      if (reduceMotion) draw(performance.now());
+    };
+
     const reduceMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
-
-    const video = reduceMotion ? null : videoRef.current;
-    const frames: ImageBitmap[] = [];
-    let hasTex = 0;
-    let capturing = !!video;
-    let capturePending = false;
-    let lastCapturedTime = -1;
-    let frameIdx = 0;
-    let frameStep = 1;
-    let lastSwap = 0;
-    let raf = 0;
-    let captureRaf = 0;
-    let disposed = false;
 
     // Target follows the pointer; the drawn position eases toward it, which
     // is where the "momentum" in the bloom comes from.
@@ -232,98 +251,6 @@ export function GlassHeroBg({
       };
     }
     if (!reduceMotion) window.addEventListener("pointermove", onPointerMove);
-
-    function upload(source: TexImageSource) {
-      try {
-        gl!.texImage2D(
-          gl!.TEXTURE_2D,
-          0,
-          gl!.RGB,
-          gl!.RGB,
-          gl!.UNSIGNED_BYTE,
-          source
-        );
-        hasTex = 1;
-      } catch {
-        // Cross-origin video without CORS headers taints the texture. Drop
-        // the video layer; the glass + bloom still carry the hero.
-        hasTex = 0;
-        capturing = false;
-      }
-    }
-
-    // Capture pass: grab each decoded frame once (deduped by currentTime),
-    // downscaled, until the cap is hit or the clip ends.
-    function capture() {
-      if (disposed || !video || !capturing) return;
-      if (
-        !capturePending &&
-        video.currentTime !== lastCapturedTime &&
-        video.videoWidth > 0 &&
-        frames.length < MAX_FRAMES
-      ) {
-        lastCapturedTime = video.currentTime;
-        capturePending = true;
-        const h = Math.max(
-          1,
-          Math.round((CAPTURE_WIDTH * video.videoHeight) / video.videoWidth)
-        );
-        createImageBitmap(video, {
-          resizeWidth: CAPTURE_WIDTH,
-          resizeHeight: h,
-          resizeQuality: "low",
-        })
-          .then((bitmap) => {
-            if (disposed || !capturing) bitmap.close();
-            else frames.push(bitmap);
-          })
-          .catch(() => {
-            capturing = false;
-          })
-          .finally(() => {
-            capturePending = false;
-          });
-      }
-      if (frames.length >= MAX_FRAMES) {
-        capturing = false;
-        video.pause();
-        return;
-      }
-      if ("requestVideoFrameCallback" in video) {
-        video.requestVideoFrameCallback(capture);
-      } else {
-        captureRaf = requestAnimationFrame(capture);
-      }
-    }
-
-    function onEnded() {
-      capturing = false;
-      if (frames.length > 1 || !video) return;
-      // Too few frames to boomerang — a backgrounded tab throttles the
-      // capture callback to a crawl. Fall back to a plain native loop, still
-      // fed live into the texture, rather than freezing on a still.
-      video.loop = true;
-      video.play().catch(() => {});
-    }
-
-    // The clip is ~10 MB. The shader alone already carries the hero, so the
-    // download is deferred until after load — motion joins a beat later
-    // rather than competing with the LCP paint for bandwidth.
-    function startVideo() {
-      if (disposed || !video) return;
-      video.play().then(capture, () => {
-        capturing = false;
-      });
-    }
-    let startTimer = 0;
-    function scheduleVideo() {
-      startTimer = window.setTimeout(startVideo, 400);
-    }
-    if (video) {
-      video.addEventListener("ended", onEnded);
-      if (document.readyState === "complete") scheduleVideo();
-      else window.addEventListener("load", scheduleVideo, { once: true });
-    }
 
     function resize() {
       const dpr = Math.min(window.devicePixelRatio || 1, 1.25);
@@ -340,24 +267,6 @@ export function GlassHeroBg({
       resize();
       const t = now * 0.001;
 
-      // Ping-pong the captured frames; before they exist, feed the live video.
-      if (frames.length > 1) {
-        if (now - lastSwap >= FRAME_MS) {
-          lastSwap = now;
-          frameIdx += frameStep;
-          if (frameIdx >= frames.length - 1) {
-            frameIdx = frames.length - 1;
-            frameStep = -1;
-          } else if (frameIdx <= 0) {
-            frameIdx = 0;
-            frameStep = 1;
-          }
-          upload(frames[frameIdx]);
-        }
-      } else if (video && !video.paused && video.readyState >= 2) {
-        upload(video);
-      }
-
       // No pointer yet: drift on a slow orbit so the bloom is never static.
       const tx = pointer ? pointer.x : 0.5 + 0.2 * Math.cos(t * 0.28);
       const ty = pointer ? pointer.y : 0.55 + 0.13 * Math.sin(t * 0.21);
@@ -368,6 +277,7 @@ export function GlassHeroBg({
       gl!.uniform1f(timeLoc, t);
       gl!.uniform2f(mouseLoc, eased.x, eased.y);
       gl!.uniform1f(hasTexLoc, hasTex);
+      gl!.uniform1f(texAspectLoc, texAspect);
       gl!.drawArrays(gl!.TRIANGLE_STRIP, 0, 4);
       if (!reduceMotion) raf = requestAnimationFrame(draw);
     }
@@ -382,17 +292,9 @@ export function GlassHeroBg({
 
     return () => {
       disposed = true;
-      capturing = false;
       cancelAnimationFrame(raf);
-      cancelAnimationFrame(captureRaf);
-      clearTimeout(startTimer);
-      window.removeEventListener("load", scheduleVideo);
+      image.onload = null;
       window.removeEventListener("pointermove", onPointerMove);
-      if (video) {
-        video.removeEventListener("ended", onEnded);
-        video.pause();
-      }
-      frames.forEach((f) => f.close());
       if (ro) ro.disconnect();
       else window.removeEventListener("resize", resize);
       gl.deleteTexture(texture);
@@ -401,22 +303,23 @@ export function GlassHeroBg({
       gl.deleteShader(fragmentShader);
       gl.deleteBuffer(positionBuffer);
     };
-  }, []);
+  }, [imageSrc]);
 
   return (
-    <div aria-hidden className={cn("absolute inset-0 overflow-hidden", className)}>
-      {videoSrc && (
-        <video
-          ref={videoRef}
-          src={videoSrc}
-          muted
-          playsInline
-          preload="metadata"
-          crossOrigin="anonymous"
-          className="pointer-events-none absolute size-px opacity-0"
-        />
-      )}
-      <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />
+    <div
+      aria-hidden
+      className={cn("absolute inset-0 overflow-hidden", className)}
+    >
+      {/* Fallback layer: shows the same still if WebGL never comes up. The
+          canvas paints over it opaquely once the shader links. */}
+      <div
+        className="absolute inset-0 bg-cover bg-center opacity-40 saturate-50"
+        style={{ backgroundImage: `url(${imageSrc})` }}
+      />
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0 h-full w-full opacity-0 transition-opacity duration-500"
+      />
     </div>
   );
 }

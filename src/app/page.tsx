@@ -12,11 +12,6 @@ import { StickyPracticeCards } from "@/components/sticky-practice-cards";
 import { Marquee } from "@/components/marquee";
 import { firm, advocates, practiceAreas } from "@/lib/firm-data";
 
-// Third-party CDN clip, standing in until the firm supplies its own footage.
-// It is never shown directly — the shader reads its luminance only — so the
-// hero survives the URL going away (it just loses the motion layer).
-const heroClip =
-  "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260715_090628_7052d8a6-a094-4341-a4a2-ad58493a67a9.mp4";
 
 const heroPanelLinks = [
   { label: "Personalized", href: "/why-us" },
@@ -82,13 +77,13 @@ export default function Home() {
   return (
     <>
       {/* Hero — one full-viewport composition. The background is a single
-          WebGL pass: source clip boomeranged, refracted through fluted glass,
-          with a teal bloom trailing the cursor. Foreground is ink on ivory
-          and carries ZERO entrance animation, so LCP paint is untouched. */}
+          WebGL pass: the supplied glass still, refracted through fluted glass
+          ribs, with a teal bloom trailing the cursor. Foreground is ink on
+          ivory and carries ZERO entrance animation, so LCP is untouched. */}
       {/* -mt-18 pulls the section up under the sticky header (h-18) so the
           shader runs full-bleed behind the nav; pt-18 puts the content back. */}
       <section className="relative -mt-18 flex min-h-[100svh] flex-col overflow-hidden bg-background pt-18">
-        <GlassHeroBg videoSrc={heroClip} />
+        <GlassHeroBg imageSrc="/hero-glass.jpeg" />
 
         <div className="relative z-10 mx-auto w-full max-w-6xl px-4 pt-14 sm:px-6 md:pt-20">
           <p className="text-xs font-medium tracking-[0.25em] text-brand uppercase">
@@ -96,7 +91,7 @@ export default function Home() {
           </p>
           <h1 className="mt-5 max-w-4xl font-heading text-4xl leading-[1.02] font-medium tracking-tight text-balance sm:text-6xl md:text-7xl">
             Clear counsel.{" "}
-            <em className="font-normal text-brand italic">
+            <em className="gradient-text-ink font-normal italic motion-safe:animate-[gradient-shift_7s_ease-in-out_infinite]">
               Committed representation.
             </em>
           </h1>
@@ -134,7 +129,7 @@ export default function Home() {
                 <p className="text-[11px] font-medium tracking-[0.2em] text-muted-foreground uppercase">
                   What do we do?
                 </p>
-                <h2 className="mt-3 font-heading text-2xl leading-tight font-medium tracking-tight sm:text-3xl md:text-4xl">
+                <h2 className="gradient-text-ink mt-3 font-heading text-2xl leading-tight font-medium tracking-tight motion-safe:animate-[gradient-shift_9s_ease-in-out_infinite] sm:text-3xl md:text-4xl">
                   Counsel that
                   <br className="hidden sm:block" /> holds up in court
                 </h2>
