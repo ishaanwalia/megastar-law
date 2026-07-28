@@ -13,6 +13,7 @@ import { Marquee } from "@/components/marquee";
 import { OfficeMap } from "@/components/office-map";
 import { Magnetic } from "@/components/magnetic";
 import { Justitia } from "@/components/justitia";
+import { CredentialRail } from "@/components/credential-rail";
 import { firm, advocates, practiceAreas } from "@/lib/firm-data";
 
 
@@ -119,9 +120,10 @@ export default function Home() {
         {/* Above the shader, never sampled into it. Runs from under the header
             down to where the panel starts, hugging the right edge. */}
         <Justitia
-          src="/hero-glass.webp"
+          src="/hero-glass-crop.webp"
           priority
-          className="top-0 right-0 h-[56%] w-[68%] sm:h-[70%] sm:w-[48%] lg:right-[2%] lg:h-[76%] lg:w-[42%]"
+          sizes="(max-width: 640px) 62vw, 40vw"
+          className="inset-y-0 right-0 w-[62vw] sm:w-[44vw] lg:right-[3%] lg:w-[38vw]"
         />
 
         <div className="relative z-10 mx-auto w-full max-w-7xl px-5 pt-[clamp(1.75rem,6svh,5rem)] sm:px-8 lg:px-14">
@@ -240,47 +242,63 @@ export default function Home() {
           pins while the deck scrolls past it. Two stacked full-height
           sections for this was roughly 900vh of scroll for two lists. */}
       <section className="relative overflow-hidden px-5 pt-14 pb-16 sm:px-8 lg:px-14">
-        {/* Marble plate as the section's own backdrop — mirrored so she faces
-            into the page, and it carries the whole merged block on mobile. */}
         <Justitia
-          src="/hero-marble.webp"
-          className="top-8 right-0 h-[46%] w-[72%] scale-x-[-1] opacity-70 sm:opacity-60 lg:top-24 lg:right-auto lg:left-0 lg:h-[60%] lg:w-[34%] lg:scale-x-100 lg:opacity-45"
+          src="/hero-marble-crop.webp"
+          sizes="70vw"
+          className="top-10 right-0 h-[38%] w-[62%] scale-x-[-1] opacity-60 lg:hidden"
         />
 
-        <div className="relative z-10 mx-auto max-w-7xl lg:grid lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] lg:gap-14">
-          <div className="lg:sticky lg:top-[16vh] lg:self-start">
-            <div className="flex flex-wrap items-end justify-between gap-4 lg:block">
-              <h2 className="font-heading text-3xl font-medium tracking-tight">
-                Practice Areas
-              </h2>
-              <Link
-                href="/practice-areas"
-                className="flex items-center gap-1 text-sm font-medium text-brand hover:underline lg:mt-3"
-              >
-                View all <ArrowRight className="size-3.5" />
-              </Link>
+        {/* Bento: plate pinned left, deck upper-right, the forum heading
+            under the deck where the plate ends, rail across the bottom. */}
+        <div className="relative z-10 mx-auto max-w-7xl">
+          <div className="lg:grid lg:grid-cols-[minmax(0,24rem)_minmax(0,1fr)] lg:gap-14">
+            <div className="hidden lg:block">
+              <div className="sticky top-[14vh] h-[66vh] overflow-hidden rounded-3xl border border-border bg-secondary/25">
+                <Justitia
+                  src="/hero-marble-crop.webp"
+                  sizes="24rem"
+                  className="inset-0 scale-x-[-1]"
+                  imageClassName="object-contain object-bottom"
+                />
+                <div className="absolute inset-x-0 bottom-0 p-6">
+                  <p className="text-[11px] font-medium tracking-[0.2em] text-muted-foreground uppercase">
+                    Seven practice areas
+                  </p>
+                </div>
+              </div>
             </div>
 
-            <div className="mt-8 border-t border-border pt-6 lg:mt-10">
-              <p className="text-[11px] font-medium tracking-[0.2em] text-muted-foreground uppercase">
-                Where the firm appears
-              </p>
-              <ul className="mt-4 flex flex-col divide-y divide-border/70">
-                {credentials.map((c) => (
-                  <li key={c.label} className="py-2.5">
-                    <div className="text-sm font-medium">{c.label}</div>
-                    <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
-                      {c.detail}
-                    </p>
-                  </li>
-                ))}
-              </ul>
+            <div>
+              <div className="flex flex-wrap items-end justify-between gap-4">
+                <h2 className="font-heading text-3xl font-medium tracking-tight">
+                  Practice Areas
+                </h2>
+                <Link
+                  href="/practice-areas"
+                  className="flex items-center gap-1 text-sm font-medium text-brand hover:underline"
+                >
+                  View all <ArrowRight className="size-3.5" />
+                </Link>
+              </div>
+
+              <div className="mt-8">
+                <StickyPracticeCards areas={practiceAreas} />
+              </div>
+
+              {/* Sits under the deck, level with where the plate ends. */}
+              <div className="mt-4 border-t border-border pt-10">
+                <h2 className="font-heading text-3xl font-medium tracking-tight">
+                  Where the firm appears
+                </h2>
+                <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
+                  Forums Pradeep is enrolled or regularly appears before —
+                  drawn from his bar enrolment, not from network boilerplate.
+                </p>
+              </div>
             </div>
           </div>
 
-          <div className="mt-10 lg:mt-0">
-            <StickyPracticeCards areas={practiceAreas} />
-          </div>
+          <CredentialRail items={credentials} />
         </div>
       </section>
 

@@ -1,67 +1,104 @@
 "use client";
 
-// Section rail for long pages: one dot per <h2 id> found in the article, the
-// current one filled. Uses IntersectionObserver (no scroll handler) and reads
-// the headings from the DOM, so pages don't have to declare their own map.
+// Section rail: one dot per <h2> on the CURRENT page, the active one filled.
+//
+// Two bugs this fixes from the first pass: it re-reads on every route change
+// (mounted once in the layout, it was still holding the home page's headings
+// on every other route), and clicking scrolls to the heading's own top with
+// the sticky header's height subtracted, instead of landing under it.
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+
+const HEADER_OFFSET = 96; // 4.5rem sticky header + breathing room
 
 export function ReadingRail({ scope = "main" }: { scope?: string }) {
+  const pathname = usePathname();
   const [sections, setSections] = useState<{ id: string; text: string }[]>([]);
   const [activeId, setActiveId] = useState("");
 
   useEffect(() => {
-    const root = document.querySelector(scope);
-    if (!root) return;
-    const heads = [...root.querySelectorAll("h2")].filter((h) =>
-      (h.textContent || "").trim()
-    );
-    heads.forEach((h, i) => {
-      if (!h.id) h.id = `section-${i}`;
-    });
-    setSections(heads.map((h) => ({ id: h.id, text: h.textContent!.trim() })));
+    setSections([]);
+    setActiveId("");
 
-    // Recompute from ALL heading positions rather than trusting whichever
-    // entry fired: with a narrow rootMargin band, scrolling through a gap
-    // where no heading intersects leaves the old one stuck lit.
-    const sync = () => {
-      const line = window.innerHeight * 0.35;
-      let current = heads[0];
-      for (const h of heads) {
-        if (h.getBoundingClientRect().top <= line) current = h;
-      }
-      setActiveId(current.id);
-    };
-    sync();
+    // Headings mount with the route; yield once so the new page is in. A
+    // macrotask, not rAF — rAF never fires in a backgrounded tab, which would
+    // leave the rail permanently empty there.
+    const timer = window.setTimeout(() => {
+      const root = document.querySelector(scope);
+      if (!root) return;
+      const heads = [...root.querySelectorAll("h2")].filter((h) =>
+        (h.textContent || "").trim()
+      );
+      heads.forEach((h, i) => {
+        if (!h.id) h.id = `section-${i}`;
+        h.style.scrollMarginTop = `${HEADER_OFFSET}px`;
+      });
+      setSections(
+        heads.map((h) => ({ id: h.id, text: h.textContent!.trim() }))
+      );
 
-    const io = new IntersectionObserver(sync, {
-      threshold: [0, 1],
-      rootMargin: "0px 0px -35% 0px",
-    });
-    heads.forEach((h) => io.observe(h));
-    window.addEventListener("scroll", sync, { passive: true });
+      // Recompute from ALL heading positions rather than trusting whichever
+      // observer entry fired: with a narrow band, scrolling through a gap
+      // where nothing intersects leaves the previous item stuck lit.
+      const sync = () => {
+        if (!heads.length) return;
+        const line = HEADER_OFFSET + window.innerHeight * 0.2;
+        let current = heads[0];
+        for (const h of heads) {
+          if (h.getBoundingClientRect().top <= line) current = h;
+        }
+        setActiveId(current.id);
+      };
+      sync();
+      // Scroll listener drives the common case; the observer is the backstop
+      // for programmatic jumps and any environment where scroll events are
+      // frame-gated. Both call the same all-headings recompute, so they can
+      // safely fire together.
+      const io = new IntersectionObserver(sync, { threshold: [0, 0.5, 1] });
+      heads.forEach((h) => io.observe(h));
+      window.addEventListener("scroll", sync, { passive: true });
+      window.addEventListener("resize", sync);
+      cleanup = () => {
+        io.disconnect();
+        window.removeEventListener("scroll", sync);
+        window.removeEventListener("resize", sync);
+      };
+    }, 0);
+
+    let cleanup = () => {};
     return () => {
-      io.disconnect();
-      window.removeEventListener("scroll", sync);
+      clearTimeout(timer);
+      cleanup();
     };
-  }, [scope]);
+  }, [scope, pathname]);
+
+  const jump = useCallback((id: string) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    window.scrollTo({
+      top: el.getBoundingClientRect().top + window.scrollY - HEADER_OFFSET,
+      behavior: "smooth",
+    });
+  }, []);
 
   if (sections.length < 3) return null;
 
   return (
     <nav
       aria-label="On this page"
-      className="pointer-events-none fixed top-1/2 left-5 z-30 hidden -translate-y-1/2 xl:block"
+      className="pointer-events-none fixed top-1/2 left-4 z-30 hidden -translate-y-1/2 xl:block"
     >
       <ul className="pointer-events-auto flex flex-col gap-3">
         {sections.map((s) => {
           const on = s.id === activeId;
           return (
             <li key={s.id}>
-              <a
-                href={`#${s.id}`}
-                className="group flex items-center gap-2.5"
-                title={s.text}
+              <button
+                type="button"
+                onClick={() => jump(s.id)}
+                aria-current={on ? "true" : undefined}
+                className="group flex cursor-pointer items-center gap-2.5 text-left"
               >
                 <span
                   className={`h-px transition-all duration-300 ${
@@ -69,7 +106,7 @@ export function ReadingRail({ scope = "main" }: { scope?: string }) {
                   }`}
                 />
                 <span
-                  className={`max-w-40 truncate text-[11px] transition-opacity duration-300 ${
+                  className={`max-w-44 truncate text-[11px] transition-opacity duration-300 ${
                     on
                       ? "text-foreground opacity-100"
                       : "text-muted-foreground opacity-0 group-hover:opacity-100"
@@ -77,7 +114,7 @@ export function ReadingRail({ scope = "main" }: { scope?: string }) {
                 >
                   {s.text}
                 </span>
-              </a>
+              </button>
             </li>
           );
         })}

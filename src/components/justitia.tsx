@@ -2,18 +2,25 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 // The sculpture as its own layer, above the shader and never sampled into it.
-// No matting needed: the plates are shot on flat white and every surface she
-// sits on is ivory, so `mix-blend-mode: multiply` drops the backdrop to
-// nothing while keeping her edges and the chain links intact — far cleaner
-// than any threshold-based cutout of a transparent glass object.
+//
+// The plates are tight crops on a studio backdrop that carries a soft warm
+// vignette. `multiply` alone left that vignette as a visible shade, so the
+// white point is clipped first: brightness pushes the backdrop past 255 where
+// multiply drops it to nothing, while the sculpture's mid-tones survive.
+// This beats alpha matting — a transparent glass object has specular
+// highlights brighter than its own backdrop, so no threshold cuts it cleanly.
 export function Justitia({
   src,
   className,
+  imageClassName,
   priority,
+  sizes = "(max-width: 640px) 70vw, 45vw",
 }: {
   src: string;
   className?: string;
+  imageClassName?: string;
   priority?: boolean;
+  sizes?: string;
 }) {
   return (
     <div
@@ -25,8 +32,12 @@ export function Justitia({
         alt=""
         fill
         priority={priority}
-        sizes="(max-width: 640px) 65vw, 45vw"
-        className="object-contain object-right-bottom mix-blend-multiply contrast-[1.12] saturate-0"
+        sizes={sizes}
+        className={cn(
+          "object-contain object-bottom mix-blend-multiply",
+          "[filter:brightness(1.09)_contrast(1.06)_saturate(0.15)]",
+          imageClassName
+        )}
       />
     </div>
   );
