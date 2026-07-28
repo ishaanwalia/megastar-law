@@ -139,7 +139,7 @@ const sections: { heading: string; body: React.ReactNode }[] = [
 
 export default function PrivacyPage() {
   return (
-    <section className="mx-auto max-w-3xl px-4 py-16 sm:px-6 md:py-24">
+    <section className="mx-auto max-w-3xl px-5 py-16 sm:px-8 lg:px-14 xl:px-24 md:py-24">
       <h1 className="font-heading text-3xl font-medium tracking-tight">
         Privacy Policy
       </h1>

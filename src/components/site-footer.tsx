@@ -43,7 +43,7 @@ export function SiteFooter() {
     <footer className={SURFACE}>
       {/* Helpline band — the single loudest thing in the footer. */}
       <div className="border-b border-white/10">
-        <div className="mx-auto flex max-w-[1680px] flex-col items-start justify-between gap-6 px-5 py-10 sm:px-8 lg:px-14 md:flex-row md:items-center">
+        <div className="mx-auto flex max-w-[1680px] flex-col items-start justify-between gap-6 px-5 py-10 sm:px-8 lg:px-14 xl:px-24 md:flex-row md:items-center">
           <div>
             <p className="text-[11px] font-medium tracking-[0.25em] text-brand uppercase">
               {firm.helplineLabel}
@@ -71,7 +71,7 @@ export function SiteFooter() {
         </div>
       </div>
 
-      <div className="mx-auto grid max-w-[1680px] gap-10 px-5 py-14 sm:px-8 lg:px-14 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mx-auto grid max-w-[1680px] gap-10 px-5 py-14 sm:px-8 lg:px-14 xl:px-24 sm:grid-cols-2 lg:grid-cols-4">
         <div className="sm:col-span-2 lg:col-span-1">
           <div className="flex items-center gap-2.5">
             <Image
@@ -161,7 +161,7 @@ export function SiteFooter() {
       </div>
 
       <div className="border-t border-white/10">
-        <div className="mx-auto flex max-w-[1680px] flex-col gap-3 px-4 py-6 text-xs text-[#F8F5F0]/45 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+        <div className="mx-auto flex max-w-[1680px] flex-col gap-3 px-5 py-6 text-xs text-[#F8F5F0]/45 sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-14">
           <span>
             &copy; {new Date().getFullYear()} {firm.name}. All rights reserved.{" "}
             Interface effects by{" "}

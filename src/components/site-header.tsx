@@ -40,7 +40,7 @@ export function SiteHeader() {
           : "border-transparent bg-transparent"
       )}
     >
-      <div className="mx-auto flex h-18 max-w-[1680px] items-center justify-between px-5 py-3 sm:px-8 lg:px-14">
+      <div className="mx-auto flex h-18 max-w-[1680px] items-center justify-between px-5 py-3 sm:px-8 lg:px-14 xl:px-24">
         <Link href="/" className="flex items-center gap-2.5">
           <Image
             src="/brand/logo-mark.png"

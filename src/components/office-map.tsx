@@ -8,7 +8,7 @@ import { firm, offices } from "@/lib/firm-data";
 export function OfficeMap() {
   return (
     <section className="border-t border-border">
-      <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:px-14">
+      <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:px-14 xl:px-24">
         <div className="grid gap-10 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] lg:gap-16">
           <div className="lg:sticky lg:top-28 lg:self-start">
             <h2 className="font-heading text-3xl font-medium tracking-tight">

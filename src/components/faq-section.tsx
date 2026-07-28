@@ -23,7 +23,7 @@ export function FaqSection() {
 
   return (
     <section className="border-t border-border bg-secondary/40">
-      <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6 md:py-20">
+      <div className="mx-auto max-w-3xl px-5 py-16 sm:px-8 lg:px-14 xl:px-24 md:py-20">
         <Reveal>
           <h2 className="font-heading text-2xl font-medium tracking-tight">
             Frequently asked questions

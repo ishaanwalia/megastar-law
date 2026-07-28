@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 export default function InsightsPage() {
   return (
     <>
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-24">
+      <section className="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:px-14 xl:px-24 md:py-24">
         <p className="text-sm font-medium tracking-wide text-brand uppercase">
           Insights
         </p>

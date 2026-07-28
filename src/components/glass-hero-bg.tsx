@@ -62,8 +62,8 @@ vec3 scene(vec2 uv, float aspect, float swirl) {
   vec3 col = mix(IVORY, mix(IVORY, SLATE, 0.42), smoothstep(0.22, 0.88, swirl));
   vec2 d = (uv - u_mouse) * vec2(aspect, 1.0);
   float bloom = exp(-dot(d, d) * 3.0);
-  col = mix(col, TEAL, bloom * 0.4);
-  col = mix(col, IVORY, bloom * bloom * 0.3);
+  col = mix(col, TEAL, bloom * 0.16);
+  col = mix(col, IVORY, bloom * bloom * 0.16);
   return col;
 }
 

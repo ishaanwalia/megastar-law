@@ -8,12 +8,11 @@ import { PhotoPlaceholder } from "@/components/photo-placeholder";
 import { FaqSection } from "@/components/faq-section";
 import { StatNumber } from "@/components/stat-number";
 import { GlassHeroBg } from "@/components/glass-hero-bg";
-import { StickyPracticeCards } from "@/components/sticky-practice-cards";
 import { Marquee } from "@/components/marquee";
 import { OfficeMap } from "@/components/office-map";
 import { Magnetic } from "@/components/magnetic";
 import { Justitia } from "@/components/justitia";
-import { CredentialRail } from "@/components/credential-rail";
+import { PracticeSequence } from "@/components/practice-sequence";
 import { firm, advocates, practiceAreas } from "@/lib/firm-data";
 
 
@@ -123,10 +122,11 @@ export default function Home() {
           src="/hero-glass-crop.webp"
           priority
           sizes="(max-width: 640px) 62vw, 40vw"
-          className="inset-y-0 right-0 w-[62vw] sm:w-[44vw] lg:right-[3%] lg:w-[38vw]"
+          className="inset-y-0 right-0 w-[80vw] sm:w-[46vw] lg:right-[3%] lg:w-[40vw]"
+          imageClassName="object-top sm:object-bottom"
         />
 
-        <div className="relative z-10 mx-auto w-full max-w-7xl px-5 pt-[clamp(1.75rem,6svh,5rem)] sm:px-8 lg:px-14">
+        <div className="relative z-10 mx-auto w-full max-w-7xl px-5 pt-[clamp(1.75rem,6svh,5rem)] sm:px-8 lg:px-14 xl:px-24">
           <p className="text-xs font-medium tracking-[0.25em] text-brand uppercase">
             Advocates &middot; Chandigarh
           </p>
@@ -165,7 +165,7 @@ export default function Home() {
 
         {/* Glass panel anchored to the bottom edge of the first viewport —
             flush, no bottom border, so it reads as the floor of the hero. */}
-        <div className="relative z-10 mx-auto mt-auto w-full max-w-5xl px-5 pt-[clamp(1.25rem,4svh,4rem)] sm:px-8 lg:px-14">
+        <div className="relative z-10 mx-auto mt-auto w-full max-w-5xl px-5 pt-[clamp(1.25rem,4svh,4rem)] sm:px-8 lg:px-14 xl:px-24">
           <div className="border border-b-0 border-border/70 bg-card/80 px-4 pt-[clamp(1.25rem,3.4svh,3rem)] pb-0 shadow-sm backdrop-blur-md sm:px-8 md:px-10">
             <div className="grid gap-[clamp(1rem,2.4svh,1.5rem)] md:grid-cols-2 md:gap-14">
               <div>
@@ -218,7 +218,7 @@ export default function Home() {
 
       {/* Credential strip — centered glass cards, sitting in normal flow
           right after the marquee. */}
-      <div className="relative z-10 mx-auto max-w-7xl px-4 pt-10 sm:px-6">
+      <div className="relative z-10 mx-auto max-w-7xl px-5 pt-10 sm:px-8 lg:px-14 xl:px-24">
         <dl className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
           {stats.map((s) => (
             <div
@@ -238,73 +238,11 @@ export default function Home() {
         </dl>
       </div>
 
-      {/* Practice deck and the forum list share ONE section: the left column
-          pins while the deck scrolls past it. Two stacked full-height
-          sections for this was roughly 900vh of scroll for two lists. */}
-      <section className="relative overflow-hidden px-5 pt-14 pb-16 sm:px-8 lg:px-14">
-        <Justitia
-          src="/hero-marble-crop.webp"
-          sizes="70vw"
-          className="top-10 right-0 h-[38%] w-[62%] scale-x-[-1] opacity-60 lg:hidden"
-        />
-
-        {/* Bento: plate pinned left, deck upper-right, the forum heading
-            under the deck where the plate ends, rail across the bottom. */}
-        <div className="relative z-10 mx-auto max-w-7xl">
-          <div className="lg:grid lg:grid-cols-[minmax(0,24rem)_minmax(0,1fr)] lg:gap-14">
-            <div className="hidden lg:block">
-              <div className="sticky top-[14vh] h-[66vh] overflow-hidden rounded-3xl border border-border bg-secondary/25">
-                <Justitia
-                  src="/hero-marble-crop.webp"
-                  sizes="24rem"
-                  className="inset-0 scale-x-[-1]"
-                  imageClassName="object-contain object-bottom"
-                />
-                <div className="absolute inset-x-0 bottom-0 p-6">
-                  <p className="text-[11px] font-medium tracking-[0.2em] text-muted-foreground uppercase">
-                    Seven practice areas
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <div className="flex flex-wrap items-end justify-between gap-4">
-                <h2 className="font-heading text-3xl font-medium tracking-tight">
-                  Practice Areas
-                </h2>
-                <Link
-                  href="/practice-areas"
-                  className="flex items-center gap-1 text-sm font-medium text-brand hover:underline"
-                >
-                  View all <ArrowRight className="size-3.5" />
-                </Link>
-              </div>
-
-              <div className="mt-8">
-                <StickyPracticeCards areas={practiceAreas} />
-              </div>
-
-              {/* Sits under the deck, level with where the plate ends. */}
-              <div className="mt-4 border-t border-border pt-10">
-                <h2 className="font-heading text-3xl font-medium tracking-tight">
-                  Where the firm appears
-                </h2>
-                <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
-                  Forums Pradeep is enrolled or regularly appears before —
-                  drawn from his bar enrolment, not from network boilerplate.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <CredentialRail items={credentials} />
-        </div>
-      </section>
+      <PracticeSequence areas={practiceAreas} credentials={credentials} />
 
       {/* Why Megastar — a voice and a list, not a third round of icon cards. */}
       <section className="border-t border-border bg-secondary/40">
-        <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
+        <div className="mx-auto max-w-7xl px-5 py-20 sm:px-8 lg:px-14 xl:px-24">
           <Reveal>
             <div className="grid gap-12 md:grid-cols-2 md:items-start">
               <blockquote className="relative border-l-2 border-slate pl-6">
@@ -345,7 +283,7 @@ export default function Home() {
       </section>
 
       <section className="border-t border-border">
-        <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
+        <div className="mx-auto max-w-7xl px-5 py-20 sm:px-8 lg:px-14 xl:px-24">
           <Reveal>
             <div className="grid gap-10 md:grid-cols-[auto_1fr_auto] md:items-center">
               <PhotoPlaceholder
@@ -391,7 +329,7 @@ export default function Home() {
 
       {/* Results — pending real client testimonials; never fabricate these. */}
       <section className="border-t border-border">
-        <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
+        <div className="mx-auto max-w-7xl px-5 py-20 sm:px-8 lg:px-14 xl:px-24">
           <Reveal>
             <h2 className="font-heading text-3xl font-medium tracking-tight">
               What clients say

@@ -39,7 +39,7 @@ export default async function PracticeAreaPage({
 
   return (
     <>
-      <section className="mx-auto max-w-4xl px-4 py-16 sm:px-6 md:py-24">
+      <section className="mx-auto max-w-4xl px-5 py-16 sm:px-8 lg:px-14 xl:px-24 md:py-24">
         <Link
           href="/practice-areas"
           className="text-sm font-medium text-muted-foreground hover:text-brand"
@@ -130,7 +130,7 @@ export default async function PracticeAreaPage({
       </section>
 
       <section className="border-t border-border bg-secondary/40">
-        <div className="mx-auto max-w-4xl px-4 py-14 sm:px-6">
+        <div className="mx-auto max-w-4xl px-5 py-14 sm:px-8 lg:px-14 xl:px-24">
           <Reveal>
             <h2 className="font-heading text-xl font-medium">
               Related Practice Areas
