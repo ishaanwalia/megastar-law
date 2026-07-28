@@ -16,6 +16,9 @@ export function Justitia({
   // Plates ship pre-flattened (levels stretch at build), so no per-plate CSS
   // clip is needed — this is only a nudge for edge cases.
   brightness = 1,
+  // Soft ivory pool behind the sculpture. Glass or not, rib highlights
+  // reading THROUGH her legs looked like a light source under the plinth.
+  scrim = false,
 }: {
   src: string;
   className?: string;
@@ -23,12 +26,18 @@ export function Justitia({
   priority?: boolean;
   sizes?: string;
   brightness?: number;
+  scrim?: boolean;
 }) {
   return (
     <div
       aria-hidden
       className={cn("pointer-events-none absolute select-none", className)}
     >
+      {scrim && (
+        <div
+          className="absolute inset-0 [background:radial-gradient(closest-side_at_58%_62%,var(--background)_0%,color-mix(in_oklch,var(--background),transparent_35%)_55%,transparent_78%)]"
+        />
+      )}
       <Image
         src={src}
         alt=""

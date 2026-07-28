@@ -121,6 +121,7 @@ export default function Home() {
         <Justitia
           src="/hero-glass-alpha.webp"
           priority
+          scrim
           sizes="(max-width: 640px) 105vw, 42vw"
           className="inset-y-0 -right-[8vw] w-[104vw] sm:right-0 sm:w-[46vw] lg:right-[3%] lg:w-[40vw]"
           imageClassName="object-top sm:object-bottom"

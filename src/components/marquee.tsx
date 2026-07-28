@@ -17,7 +17,7 @@ export function Marquee({
         className
       )}
     >
-      <div className="flex w-max motion-safe:animate-[marquee-scroll_28s_linear_infinite]">
+      <div className="flex w-max motion-safe:animate-[marquee-scroll_28s_linear_infinite] hover:[animation-play-state:paused]">
         {[...items, ...items].map((item, i) => (
           <span
             key={i}

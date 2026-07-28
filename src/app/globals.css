@@ -284,7 +284,7 @@ body::before {
      not bleed each other’s text through. The rail and the hero panel are
      single layers and keep the fully see-through version. */
   .liquid-glass-deck {
-    background: color-mix(in oklch, var(--card) 74%, transparent);
+    background: color-mix(in oklch, var(--card) 97%, transparent);
     -webkit-backdrop-filter: blur(16px) saturate(180%);
     backdrop-filter: blur(16px) saturate(180%);
     border: 1px solid color-mix(in oklch, white 55%, transparent);

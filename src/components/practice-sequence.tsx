@@ -83,11 +83,11 @@ function DeckCard({
   return (
     <motion.article
       style={{ y, scale, opacity, zIndex: i }}
-      className="liquid-glass-deck absolute inset-x-0 top-0 origin-top rounded-3xl p-6 shadow-lg sm:p-8"
+      className="liquid-glass-deck group/card absolute inset-x-0 top-0 origin-top rounded-3xl p-6 shadow-lg sm:p-8"
     >
       <div className="flex items-start justify-between gap-6">
         <div className="[perspective:600px]">
-          <div className="flex size-12 items-center justify-center rounded-xl bg-slate text-slate-foreground shadow-sm sm:size-14">
+          <div className="flex size-12 items-center justify-center rounded-xl bg-slate text-slate-foreground shadow-sm group-hover/card:animate-[icon-spin_1.1s_cubic-bezier(0.65,0,0.35,1)] motion-reduce:group-hover/card:animate-none sm:size-14">
             <Icon className="size-5 sm:size-6" />
           </div>
         </div>
@@ -216,8 +216,8 @@ export function PracticeSequence({
   return (
     <section ref={container} className="relative h-[420vh]">
       <div className="sticky top-18 h-[calc(100svh-4.5rem)] overflow-hidden">
-        <div className="mx-auto flex h-full max-w-7xl flex-col px-5 pt-8 pb-6 sm:px-8 lg:px-14 xl:px-24">
-          <div className="flex shrink-0 flex-wrap items-end justify-between gap-4">
+        <div className="mx-auto flex h-full max-w-7xl flex-col px-4 pt-8 pb-6 sm:px-6 lg:px-8 xl:px-12">
+          <div className="relative z-30 flex shrink-0 flex-wrap items-end justify-between gap-4">
             <h2 className="font-heading text-2xl font-medium tracking-tight sm:text-3xl">
               Practice Areas
             </h2>
@@ -229,13 +229,13 @@ export function PracticeSequence({
             </Link>
           </div>
 
-          <div className="relative mt-5 grid min-h-0 flex-1 gap-x-12 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)]">
+          <div className="relative mt-5 grid min-h-0 flex-1 gap-x-12 lg:grid-cols-[minmax(0,24rem)_minmax(0,1fr)]">
             {/* Phase 0 — the plate. No card, no border: on mobile it sits
                 behind everything, on desktop it holds the left column. */}
             <Justitia
               src="/hero-marble-alpha.webp"
               sizes="(max-width: 1024px) 80vw, 20rem"
-              className="inset-0 lg:inset-auto lg:top-0 lg:bottom-0 lg:left-0 lg:w-80"
+              className="inset-0 scale-x-[-1] lg:inset-auto lg:top-0 lg:-bottom-6 lg:left-0 lg:w-[26rem]"
               imageClassName="object-contain object-bottom opacity-45 lg:opacity-100"
             />
 
