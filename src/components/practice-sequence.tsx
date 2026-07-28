@@ -74,7 +74,7 @@ function DeckCard({
   // pile. Each card also holds a small vertical offset so its top edge stays
   // visible above the one in front.
   const targetScale = Math.max(0.62, 1 - (total - 1 - i) * 0.055);
-  const restY = -(total - 1 - i) * 14;
+  const restY = (total - 1 - i) * -14 + (total - 1) * 14;
 
   const y = useTransform(progress, [start, end], [restY + 460, restY]);
   const scale = useTransform(progress, [start, CARDS_END], [1, targetScale]);
@@ -83,7 +83,7 @@ function DeckCard({
   return (
     <motion.article
       style={{ y, scale, opacity, zIndex: i }}
-      className="liquid-glass-deck group/card absolute inset-x-0 top-0 origin-top rounded-3xl p-6 shadow-lg sm:p-8"
+      className="liquid-glass-deck group/card absolute inset-x-0 top-0 origin-top rounded-3xl p-6 shadow-lg [will-change:transform] sm:p-8"
     >
       <div className="flex items-start justify-between gap-6">
         <div className="[perspective:600px]">
@@ -245,7 +245,7 @@ export function PracticeSequence({
       </noscript>
     <section ref={container} className="relative h-[420vh]">
       <div className="sticky top-18 h-[calc(100svh-4.5rem)] overflow-hidden">
-        <div className="mx-auto flex h-full max-w-7xl flex-col px-4 pt-8 pb-6 sm:px-6 lg:px-8 xl:px-12">
+        <div className="mx-auto flex h-full max-w-7xl flex-col px-4 pt-6 pb-3 sm:px-6 sm:pt-8 sm:pb-6 lg:px-8 xl:px-12">
           <div className="relative z-30 flex shrink-0 flex-wrap items-end justify-between gap-4">
             <h2 className="font-heading text-2xl font-medium tracking-tight sm:text-3xl">
               Practice Areas
@@ -299,7 +299,11 @@ export function PracticeSequence({
           </div>
 
           <div ref={viewportRef} className="mt-5 shrink-0 overflow-hidden">
-            <motion.div ref={trackRef} style={{ x: railX }} className="flex gap-4">
+            <motion.div
+              ref={trackRef}
+              style={{ x: railX }}
+              className="flex gap-4 [will-change:transform]"
+            >
               {credentials.map((c, i) => (
                 <RailCard key={c.label} c={c} i={i} />
               ))}
