@@ -87,7 +87,7 @@ function DeckCard({
     >
       <div className="flex items-start justify-between gap-6">
         <div className="[perspective:600px]">
-          <div className="flex size-12 items-center justify-center rounded-xl bg-slate text-slate-foreground shadow-sm group-hover/card:animate-[icon-spin_1.1s_cubic-bezier(0.65,0,0.35,1)] motion-reduce:group-hover/card:animate-none sm:size-14">
+          <div className="flex size-12 items-center justify-center rounded-xl border border-brand/25 bg-brand/12 text-brand shadow-sm group-hover/card:animate-[icon-spin_1.1s_cubic-bezier(0.65,0,0.35,1)] motion-reduce:group-hover/card:animate-none sm:size-14">
             <Icon className="size-5 sm:size-6" />
           </div>
         </div>
@@ -178,6 +178,9 @@ export function PracticeSequence({
         Forums Pradeep is enrolled in or regularly appears before — drawn from
         his bar enrolment, not from network boilerplate.
       </p>
+      <p className="mt-2 text-[11px] tracking-[0.18em] text-muted-foreground/70 uppercase">
+        Keep scrolling — the rail moves with you
+      </p>
     </>
   );
 
@@ -214,6 +217,32 @@ export function PracticeSequence({
   }
 
   return (
+    <>
+      <noscript>
+        <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:px-14">
+          <h2 className="font-heading text-3xl font-medium">Practice Areas</h2>
+          <ul className="mt-6 grid gap-4 sm:grid-cols-2">
+            {areas.map((a) => (
+              <li key={a.slug}>
+                <a href={`/practice-areas/${a.slug}`}>
+                  <strong>{a.title}</strong>
+                </a>
+                <p>{a.summary}</p>
+              </li>
+            ))}
+          </ul>
+          <h2 className="mt-10 font-heading text-3xl font-medium">
+            Where the firm appears
+          </h2>
+          <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+            {credentials.map((c) => (
+              <li key={c.label}>
+                <strong>{c.label}</strong> — {c.detail}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </noscript>
     <section ref={container} className="relative h-[420vh]">
       <div className="sticky top-18 h-[calc(100svh-4.5rem)] overflow-hidden">
         <div className="mx-auto flex h-full max-w-7xl flex-col px-4 pt-8 pb-6 sm:px-6 lg:px-8 xl:px-12">
@@ -262,6 +291,13 @@ export function PracticeSequence({
           </div>
 
           {/* Phase 3 — the rail, full width beneath both columns. */}
+          <div className="mt-4 h-px w-full shrink-0 bg-border">
+            <motion.div
+              style={{ scaleX: scrollYProgress }}
+              className="h-px origin-left bg-brand"
+            />
+          </div>
+
           <div ref={viewportRef} className="mt-5 shrink-0 overflow-hidden">
             <motion.div ref={trackRef} style={{ x: railX }} className="flex gap-4">
               {credentials.map((c, i) => (
@@ -272,5 +308,6 @@ export function PracticeSequence({
         </div>
       </div>
     </section>
+    </>
   );
 }

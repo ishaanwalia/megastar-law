@@ -283,6 +283,15 @@ body::before {
   /* Deck variant: same glass, but opaque enough that seven stacked panes do
      not bleed each other’s text through. The rail and the hero panel are
      single layers and keep the fully see-through version. */
+  /* Compositing budget: stacked backdrop-filters are expensive, and on small
+     screens the header, panel and widgets can all be on screen at once. */
+  @media (max-width: 639px) {
+    .liquid-glass {
+      -webkit-backdrop-filter: blur(4px) saturate(150%);
+      backdrop-filter: blur(4px) saturate(150%);
+    }
+  }
+
   .liquid-glass-frost {
     background: color-mix(in oklch, var(--card) 97%, transparent);
     -webkit-backdrop-filter: blur(16px) saturate(180%);
@@ -338,7 +347,7 @@ body::before {
       100deg,
       var(--ink) 0%,
       var(--brand) 34%,
-      color-mix(in oklch, var(--brand), white 30%) 50%,
+      color-mix(in oklch, var(--brand), white 16%) 50%,
       var(--brand) 66%,
       var(--ink) 100%
     );
