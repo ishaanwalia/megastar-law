@@ -283,14 +283,25 @@ body::before {
   /* Deck variant: same glass, but opaque enough that seven stacked panes do
      not bleed each other’s text through. The rail and the hero panel are
      single layers and keep the fully see-through version. */
-  .liquid-glass-frost,
-  .liquid-glass-deck {
+  .liquid-glass-frost {
     background: color-mix(in oklch, var(--card) 97%, transparent);
     -webkit-backdrop-filter: blur(16px) saturate(180%);
     backdrop-filter: blur(16px) saturate(180%);
     border: 1px solid color-mix(in oklch, white 55%, transparent);
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.7),
+      0 26px 64px -30px rgba(31, 42, 51, 0.45);
+    isolation: isolate;
+  }
+
+  /* Deck cards are opaque, full stop. They stack seven deep, so any
+     transparency at all lets the card behind read through the front one.
+     They keep the glass rim and shadow, not the see-through. */
+  .liquid-glass-deck {
+    background: var(--card);
+    border: 1px solid color-mix(in oklch, white 55%, transparent);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.75),
       0 26px 64px -30px rgba(31, 42, 51, 0.45);
     isolation: isolate;
   }
