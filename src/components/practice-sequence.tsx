@@ -61,6 +61,8 @@ const CARDS_END = 0.52;
 const DECK_HOLD = 0.58;
 const DECK_OUT = 0.66;
 const HEAD_END = 0.78;
+// Rail travel and plate growth both finish here, just short of release.
+const SEQUENCE_END = 0.98;
 
 function DeckCard({
   area,
@@ -89,12 +91,9 @@ function DeckCard({
   const y = useTransform(progress, [start, end], [restY + 460, restY]);
   const scale = useTransform(progress, [start, CARDS_END], [1, targetScale]);
   // Fade in on arrival AND out on exit, in one transform off the same scroll
-  // progress. Doing the exit here rather than as an opacity on a wrapper
-  // matters: the section re-renders mid-scroll (setTravel fires from the
-  // ResizeObserver as the deck moves) and a wrapper-level opacity motion value
-  // gets stranded at its progress-0 value when that happens, which is what put
-  // the cards back on screen underneath the heading. Per-card opacity is on
-  // the same code path as the fade-in, which never had the problem.
+  // progress. The exit belongs here rather than on a wrapper: this is the same
+  // code path as the fade-in, which has always been reliable, and it keeps the
+  // whole card lifecycle in one place instead of split across two elements.
   const opacity = useTransform(
     progress,
     [start, start + step * 0.3, DECK_HOLD, DECK_OUT],
@@ -168,13 +167,12 @@ export function PracticeSequence({
 
   // How far the rail must move to bring its last card fully into view.
   //
-  // A motion value, NOT state, and this is the important part: state here made
-  // the component re-render mid-scroll, because the ResizeObserver fires while
-  // the deck is moving. Every re-render stranded the wrapper-level opacity
-  // motion values at their progress-0 readings — transforms got re-applied by
-  // the frame loop, opacity did not — which is how faded-out cards reappeared
-  // underneath the heading. With no state, this component never re-renders
-  // after mount and nothing can be stranded.
+  // A motion value rather than state: as state, this was the one thing that
+  // re-rendered the component mid-scroll, since the ResizeObserver fires while
+  // the deck is moving. Scroll-driven styles and re-renders racing each other
+  // is a bad combination to leave in place under a section whose whole job is
+  // sequencing, so the render is removed. The visibility cutoffs below are
+  // what actually guarantee the sequencing.
   const travel = useMotionValue(0);
 
   useEffect(() => {
@@ -221,7 +219,7 @@ export function PracticeSequence({
   const titleEvents = useTransform(scrollYProgress, (p) =>
     p >= DECK_OUT ? "none" : "auto"
   );
-  const headY = useTransform(scrollYProgress, [DECK_OUT, HEAD_END], [40, 0]);
+  const headY = useTransform(scrollYProgress, [DECK_OUT, HEAD_END], [70, 0]);
   const headOpacity = useTransform(
     scrollYProgress,
     [DECK_OUT, DECK_OUT + (HEAD_END - DECK_OUT) * 0.6],
@@ -229,8 +227,34 @@ export function PracticeSequence({
   );
   // Reads travel at call time, so a late measurement needs no re-render.
   const railX = useTransform(scrollYProgress, (p) => {
-    const t = Math.min(1, Math.max(0, (p - HEAD_END) / (0.98 - HEAD_END)));
+    const t = Math.min(1, Math.max(0, (p - HEAD_END) / (SEQUENCE_END - HEAD_END)));
     return -t * travel.get();
+  });
+
+  // Desktop-only, and read through a ref so the breakpoint never triggers a
+  // render. It is sampled inside the scroll transform below, so a resize takes
+  // effect on the next scroll frame — fine for a decorative plate.
+  const isDesktop = useRef(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const sync = () => {
+      isDesktop.current = mq.matches;
+    };
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+
+  // Phase 5 — once the practice block is gone the plate grows from its own
+  // bottom edge, so the base stays welded to the rail divider and only the top
+  // travels, up under the header (the sticky wrapper's overflow clips it
+  // exactly at the header line). Scale, not height, so it is never stretched.
+  // 0.28 is tuned to land the top on the header at this section's proportions;
+  // it overshoots slightly on purpose so the clip is always clean.
+  const plateScale = useTransform(scrollYProgress, (p) => {
+    if (!isDesktop.current) return 1;
+    const t = Math.min(1, Math.max(0, (p - DECK_OUT) / (SEQUENCE_END - DECK_OUT)));
+    return 1 + t * 0.28;
   });
 
   const heading = (
@@ -300,55 +324,52 @@ export function PracticeSequence({
               rail contradicts what is on screen. "Where the firm appears" then
               rises into the slot the title vacates, so there is always exactly
               one heading and it always names the content beneath it. */}
-          <div className="relative z-30 shrink-0">
-            <motion.div
-              style={{
-                y: titleY,
-                opacity: titleOpacity,
-                visibility: deckVisibility,
-                pointerEvents: titleEvents,
-              }}
-              className="flex flex-wrap items-end justify-between gap-4"
+          {/* The "Practice Areas" title belongs to the cards, so it leaves on
+              the same window they do — a Practice Areas heading still sitting
+              over the credential rail contradicts what is on screen. */}
+          <motion.div
+            style={{
+              y: titleY,
+              opacity: titleOpacity,
+              visibility: deckVisibility,
+              pointerEvents: titleEvents,
+            }}
+            className="relative z-30 flex shrink-0 flex-wrap items-end justify-between gap-4"
+          >
+            <h2 className="font-heading text-2xl font-medium tracking-tight sm:text-3xl">
+              Practice Areas
+            </h2>
+            <Link
+              href="/practice-areas"
+              className="flex items-center gap-1 text-sm font-medium text-brand hover:underline"
             >
-              <h2 className="font-heading text-2xl font-medium tracking-tight sm:text-3xl">
-                Practice Areas
-              </h2>
-              <Link
-                href="/practice-areas"
-                className="flex items-center gap-1 text-sm font-medium text-brand hover:underline"
-              >
-                View all <ArrowRight className="size-3.5" />
-              </Link>
-            </motion.div>
-
-            <motion.div
-              style={{
-                y: headY,
-                opacity: headOpacity,
-                visibility: headVisibility,
-              }}
-              className="absolute inset-x-0 top-0"
-            >
-              {heading}
-              {railHint}
-            </motion.div>
-          </div>
+              View all <ArrowRight className="size-3.5" />
+            </Link>
+          </motion.div>
 
           <div className="relative mt-5 grid min-h-0 flex-1 gap-x-12 lg:grid-cols-[minmax(0,24rem)_minmax(0,1fr)]">
-            {/* Phase 0 — the plate. No card, no border: on mobile it sits
-                behind everything, on desktop it holds the left column. */}
-            <Justitia
-              src="/hero-marble-alpha.webp"
-              sizes="(max-width: 1024px) 80vw, 20rem"
-              className="inset-0 scale-x-[-1] lg:inset-auto lg:top-0 lg:-bottom-6 lg:left-0 lg:w-[26rem]"
-              imageClassName="object-contain object-bottom opacity-45 lg:opacity-100"
-            />
+            {/* Phases 0 + 5 — the plate. No card, no border: on mobile it sits
+                behind everything, on desktop it holds the left column.
+                -bottom-4 lands her base exactly on the rail divider rather
+                than hovering above it, and origin-bottom keeps it there while
+                she grows. */}
+            <motion.div
+              style={{ scale: plateScale }}
+              className="pointer-events-none absolute inset-0 origin-bottom lg:inset-auto lg:top-0 lg:-bottom-4 lg:left-0 lg:w-[26rem]"
+            >
+              <Justitia
+                src="/hero-marble-alpha.webp"
+                sizes="(max-width: 1024px) 80vw, 34rem"
+                className="inset-0 scale-x-[-1]"
+                imageClassName="object-contain object-bottom opacity-45 lg:opacity-100"
+              />
+            </motion.div>
 
             {/* Phases 1 + 2 — deck, then the heading taking over the space the
                 deck vacates. Both are absolutely positioned in the same box so
                 the heading does not have to fit in a gap below a stack that is
                 taller than its container. */}
-            <div className="relative col-start-1 min-h-0 lg:col-start-2">
+            <div className="relative col-start-1 flex min-h-0 flex-col lg:col-start-2">
               <motion.div
                 style={{
                   y: deckY,
@@ -356,7 +377,7 @@ export function PracticeSequence({
                   visibility: deckVisibility,
                   pointerEvents: deckEvents,
                 }}
-                className="absolute inset-0 origin-top [will-change:transform]"
+                className="relative min-h-0 flex-[3] origin-top [will-change:transform]"
               >
                 {areas.map((area, i) => (
                   <DeckCard
@@ -367,6 +388,17 @@ export function PracticeSequence({
                     progress={scrollYProgress}
                   />
                 ))}
+              </motion.div>
+              <motion.div
+                style={{
+                  y: headY,
+                  opacity: headOpacity,
+                  visibility: headVisibility,
+                }}
+                className="relative z-20 shrink-0 pt-5"
+              >
+                {heading}
+                {railHint}
               </motion.div>
             </div>
           </div>
