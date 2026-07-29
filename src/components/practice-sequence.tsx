@@ -14,9 +14,10 @@
 // prefers-reduced-motion — no pinning, no transforms, all content present.
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import {
   motion,
+  useMotionValue,
   useReducedMotion,
   useScroll,
   useTransform,
@@ -87,7 +88,18 @@ function DeckCard({
 
   const y = useTransform(progress, [start, end], [restY + 460, restY]);
   const scale = useTransform(progress, [start, CARDS_END], [1, targetScale]);
-  const opacity = useTransform(progress, [start, start + step * 0.3], [0, 1]);
+  // Fade in on arrival AND out on exit, in one transform off the same scroll
+  // progress. Doing the exit here rather than as an opacity on a wrapper
+  // matters: the section re-renders mid-scroll (setTravel fires from the
+  // ResizeObserver as the deck moves) and a wrapper-level opacity motion value
+  // gets stranded at its progress-0 value when that happens, which is what put
+  // the cards back on screen underneath the heading. Per-card opacity is on
+  // the same code path as the fade-in, which never had the problem.
+  const opacity = useTransform(
+    progress,
+    [start, start + step * 0.3, DECK_HOLD, DECK_OUT],
+    [0, 1, 1, 0]
+  );
 
   return (
     <motion.article
@@ -148,7 +160,6 @@ export function PracticeSequence({
   const trackRef = useRef<HTMLDivElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
   const reduceMotion = useReducedMotion();
-  const [travel, setTravel] = useState(0);
 
   const { scrollYProgress } = useScroll({
     target: container,
@@ -156,35 +167,71 @@ export function PracticeSequence({
   });
 
   // How far the rail must move to bring its last card fully into view.
+  //
+  // A motion value, NOT state, and this is the important part: state here made
+  // the component re-render mid-scroll, because the ResizeObserver fires while
+  // the deck is moving. Every re-render stranded the wrapper-level opacity
+  // motion values at their progress-0 readings — transforms got re-applied by
+  // the frame loop, opacity did not — which is how faded-out cards reappeared
+  // underneath the heading. With no state, this component never re-renders
+  // after mount and nothing can be stranded.
+  const travel = useMotionValue(0);
+
   useEffect(() => {
     const measure = () => {
       const track = trackRef.current;
       const view = viewportRef.current;
       if (!track || !view) return;
-      setTravel(Math.max(0, track.scrollWidth - view.clientWidth));
+      travel.set(Math.max(0, track.scrollWidth - view.clientWidth));
     };
     measure();
     const ro = new ResizeObserver(measure);
     if (trackRef.current) ro.observe(trackRef.current);
     if (viewportRef.current) ro.observe(viewportRef.current);
     return () => ro.disconnect();
-  }, []);
+  }, [travel]);
 
-  // Deck clears out first, heading comes in after — strictly sequential.
-  // It lifts and shrinks slightly on the way out so it reads as the deck
-  // leaving to make room, not as the cards dissolving where they stand.
-  const deckOpacity = useTransform(scrollYProgress, [DECK_HOLD, DECK_OUT], [1, 0]);
+  // Deck clears out first, heading comes in after — strictly sequential. The
+  // deck lifts and shrinks on the way out so it reads as leaving to make room;
+  // its fade lives on the cards themselves (see DeckCard).
   const deckY = useTransform(scrollYProgress, [DECK_HOLD, DECK_OUT], [0, -60]);
   const deckScale = useTransform(scrollYProgress, [DECK_HOLD, DECK_OUT], [1, 0.94]);
-  // Invisible cards must stop swallowing taps on the heading underneath.
-  const deckEvents = useTransform(deckOpacity, (o) => (o < 0.05 ? "none" : "auto"));
-  const headY = useTransform(scrollYProgress, [DECK_OUT, HEAD_END], [70, 0]);
+  // Invisible cards must stop swallowing taps on whatever is underneath.
+  const deckEvents = useTransform(scrollYProgress, (p) =>
+    p >= DECK_OUT ? "none" : "auto"
+  );
+  // Hard cutoffs, not just a fade. `visibility` flips discretely at the phase
+  // boundary, so past DECK_OUT the deck and its title cannot be on screen no
+  // matter what the opacity interpolation does — the fade is only there to
+  // make the switch look smooth, never to enforce it.
+  const deckVisibility = useTransform(scrollYProgress, (p) =>
+    p >= DECK_OUT ? "hidden" : "visible"
+  );
+  const headVisibility = useTransform(scrollYProgress, (p) =>
+    p >= DECK_OUT ? "visible" : "hidden"
+  );
+  // The section title exits on the deck's own schedule — same window, so they
+  // read as one block leaving together.
+  const titleY = useTransform(scrollYProgress, [DECK_HOLD, DECK_OUT], [0, -40]);
+  const titleOpacity = useTransform(
+    scrollYProgress,
+    [DECK_HOLD, DECK_OUT],
+    [1, 0]
+  );
+  const titleEvents = useTransform(scrollYProgress, (p) =>
+    p >= DECK_OUT ? "none" : "auto"
+  );
+  const headY = useTransform(scrollYProgress, [DECK_OUT, HEAD_END], [40, 0]);
   const headOpacity = useTransform(
     scrollYProgress,
     [DECK_OUT, DECK_OUT + (HEAD_END - DECK_OUT) * 0.6],
     [0, 1]
   );
-  const railX = useTransform(scrollYProgress, [HEAD_END, 0.98], [0, -travel]);
+  // Reads travel at call time, so a late measurement needs no re-render.
+  const railX = useTransform(scrollYProgress, (p) => {
+    const t = Math.min(1, Math.max(0, (p - HEAD_END) / (0.98 - HEAD_END)));
+    return -t * travel.get();
+  });
 
   const heading = (
     <>
@@ -248,16 +295,43 @@ export function PracticeSequence({
     <section ref={container} className="relative h-[420vh]">
       <div className="sticky top-18 h-[calc(100svh-4.5rem)] overflow-hidden">
         <div className="mx-auto flex h-full max-w-7xl flex-col px-4 pt-6 pb-3 sm:px-6 sm:pt-8 sm:pb-6 lg:px-8 xl:px-12">
-          <div className="relative z-30 flex shrink-0 flex-wrap items-end justify-between gap-4">
-            <h2 className="font-heading text-2xl font-medium tracking-tight sm:text-3xl">
-              Practice Areas
-            </h2>
-            <Link
-              href="/practice-areas"
-              className="flex items-center gap-1 text-sm font-medium text-brand hover:underline"
+          {/* The "Practice Areas" title belongs to the cards, so it leaves with
+              them — a Practice Areas heading still sitting over the credential
+              rail contradicts what is on screen. "Where the firm appears" then
+              rises into the slot the title vacates, so there is always exactly
+              one heading and it always names the content beneath it. */}
+          <div className="relative z-30 shrink-0">
+            <motion.div
+              style={{
+                y: titleY,
+                opacity: titleOpacity,
+                visibility: deckVisibility,
+                pointerEvents: titleEvents,
+              }}
+              className="flex flex-wrap items-end justify-between gap-4"
             >
-              View all <ArrowRight className="size-3.5" />
-            </Link>
+              <h2 className="font-heading text-2xl font-medium tracking-tight sm:text-3xl">
+                Practice Areas
+              </h2>
+              <Link
+                href="/practice-areas"
+                className="flex items-center gap-1 text-sm font-medium text-brand hover:underline"
+              >
+                View all <ArrowRight className="size-3.5" />
+              </Link>
+            </motion.div>
+
+            <motion.div
+              style={{
+                y: headY,
+                opacity: headOpacity,
+                visibility: headVisibility,
+              }}
+              className="absolute inset-x-0 top-0"
+            >
+              {heading}
+              {railHint}
+            </motion.div>
           </div>
 
           <div className="relative mt-5 grid min-h-0 flex-1 gap-x-12 lg:grid-cols-[minmax(0,24rem)_minmax(0,1fr)]">
@@ -277,12 +351,12 @@ export function PracticeSequence({
             <div className="relative col-start-1 min-h-0 lg:col-start-2">
               <motion.div
                 style={{
-                  opacity: deckOpacity,
                   y: deckY,
                   scale: deckScale,
+                  visibility: deckVisibility,
                   pointerEvents: deckEvents,
                 }}
-                className="absolute inset-0 origin-top [will-change:transform,opacity]"
+                className="absolute inset-0 origin-top [will-change:transform]"
               >
                 {areas.map((area, i) => (
                   <DeckCard
@@ -293,13 +367,6 @@ export function PracticeSequence({
                     progress={scrollYProgress}
                   />
                 ))}
-              </motion.div>
-              <motion.div
-                style={{ y: headY, opacity: headOpacity }}
-                className="absolute inset-x-0 top-0 z-20"
-              >
-                {heading}
-                {railHint}
               </motion.div>
             </div>
           </div>
