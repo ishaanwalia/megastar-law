@@ -6,7 +6,7 @@ import { Reveal } from "@/components/reveal";
 import { CtaBanner } from "@/components/cta-banner";
 import { PhotoPlaceholder } from "@/components/photo-placeholder";
 import { FaqSection } from "@/components/faq-section";
-import { StatNumber } from "@/components/stat-number";
+import { StatNumber, type StatFormat } from "@/components/stat-number";
 import { GlassHeroBg } from "@/components/glass-hero-bg";
 import { Marquee } from "@/components/marquee";
 import { OfficeMap } from "@/components/office-map";
@@ -51,13 +51,16 @@ const credentials = [
   },
 ];
 
+// Carries ONLY facts stated nowhere else on this page. The stat cards own the
+// numbers (15+, 2011, 7, 24/7) and the credential rail owns the forums, so
+// repeating either here is the redundancy the design review flagged.
 const credentialTicker = [
-  "Punjab & Haryana High Court",
-  "District Courts, Chandigarh",
-  "NRI Section 498A Specialists",
-  "15+ Years, Civil & Criminal",
-  "24/7 Legal Helpline",
-  "Enrolled 2011, P-2435/2011",
+  "NRI Section 498A proceedings",
+  "NDPS Act matters",
+  "Cheque dishonour — NI Act §138",
+  "Banking & Co-operative Societies Act",
+  "Land & property disputes",
+  "Civil recovery suits",
 ];
 
 const pradeep = advocates[0];
@@ -72,6 +75,8 @@ type Stat =
   | {
       value: number;
       suffix?: string;
+      // Intl options for the odometer — a year must not be digit-grouped.
+      format?: StatFormat;
       label: string;
       accent: keyof typeof accentClasses;
     }
@@ -79,7 +84,12 @@ type Stat =
 
 const stats: Stat[] = [
   { value: 15, suffix: "+", label: "Years practicing, civil & criminal", accent: "brand" },
-  { value: 2011, label: "Enrolled, Punjab & Haryana Bar", accent: "ink" },
+  {
+    value: 2011,
+    format: { useGrouping: false },
+    label: "Enrolled, Punjab & Haryana Bar",
+    accent: "ink",
+  },
   { value: 7, label: "Practice areas covered", accent: "slate" },
   { display: "24/7", label: "Legal helpline", accent: "brand" },
 ];
@@ -215,11 +225,11 @@ export default function Home() {
 
       {/* Marquee sits flush against the hero — no border between them — so
           the ticker reads as the hero's own bottom edge, not a new section. */}
-      <Marquee items={credentialTicker} className="border-b border-border/60 py-4" />
+      <Marquee items={credentialTicker} className="border-b border-border/60 py-5" />
 
       {/* Credential strip — centered glass cards, sitting in normal flow
           right after the marquee. */}
-      <div className="relative z-10 mx-auto max-w-7xl px-5 pt-10 sm:px-8 lg:px-14 xl:px-24">
+      <div className="relative z-10 mx-auto max-w-7xl px-5 pt-14 sm:px-8 lg:px-14 xl:px-24">
         <dl className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
           {stats.map((s) => (
             <div
@@ -228,7 +238,11 @@ export default function Home() {
             >
               <dt className="font-mono text-2xl font-medium tabular-nums">
                 {"value" in s ? (
-                  <StatNumber value={s.value} suffix={s.suffix} />
+                  <StatNumber
+                    value={s.value}
+                    suffix={s.suffix}
+                    format={s.format}
+                  />
                 ) : (
                   s.display
                 )}
@@ -243,7 +257,7 @@ export default function Home() {
 
       {/* Why Megastar — a voice and a list, not a third round of icon cards. */}
       <section className="border-t border-border bg-secondary/40">
-        <div className="mx-auto max-w-7xl px-5 py-20 sm:px-8 lg:px-14 xl:px-24">
+        <div className="mx-auto max-w-7xl px-5 py-24 sm:px-8 lg:px-14 xl:px-24 md:py-28">
           <Reveal>
             <div className="grid gap-12 md:grid-cols-2 md:items-start">
               <blockquote className="relative border-l-2 border-slate pl-6">
@@ -284,7 +298,7 @@ export default function Home() {
       </section>
 
       <section className="border-t border-border">
-        <div className="mx-auto max-w-7xl px-5 py-20 sm:px-8 lg:px-14 xl:px-24">
+        <div className="mx-auto max-w-7xl px-5 py-24 sm:px-8 lg:px-14 xl:px-24 md:py-28">
           <Reveal>
             <div className="grid gap-10 md:grid-cols-[auto_1fr_auto] md:items-center">
               <PhotoPlaceholder
@@ -308,11 +322,11 @@ export default function Home() {
                     Bar Enrollment {pradeep.enrollment}
                   </Badge>
                 </div>
+                {/* No specialty list here: the ticker above already carries
+                    them, and /about carries the full set. */}
                 <p className="mt-4 max-w-2xl text-muted-foreground">
                   Enrolled as an Advocate ({pradeep.enrollment}), member of the{" "}
-                  {pradeep.barMembership}. {pradeep.experience}, with
-                  particular depth in{" "}
-                  {pradeep.specialties.slice(0, 3).join(", ")}, and more.
+                  {pradeep.barMembership}. {pradeep.experience}.
                 </p>
               </div>
               <Button
@@ -330,7 +344,7 @@ export default function Home() {
 
       {/* Results — pending real client testimonials; never fabricate these. */}
       <section className="border-t border-border">
-        <div className="mx-auto max-w-7xl px-5 py-20 sm:px-8 lg:px-14 xl:px-24">
+        <div className="mx-auto max-w-7xl px-5 py-24 sm:px-8 lg:px-14 xl:px-24 md:py-28">
           <Reveal>
             <h2 className="font-heading text-3xl font-medium tracking-tight">
               What clients say

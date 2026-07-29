@@ -34,7 +34,10 @@ export function SiteHeader() {
   return (
     <header
       className={cn(
-        "fixed inset-x-0 top-0 z-40 border-b transition-colors duration-300",
+        // translate3d forces the header onto its own compositor layer. Without
+        // it iOS Safari repaints it with the page during momentum scroll and
+        // the backdrop-blur makes that visible as the header lagging/detaching.
+        "fixed inset-x-0 top-0 z-40 border-b transition-colors duration-300 [backface-visibility:hidden] [transform:translate3d(0,0,0)]",
         scrolled
           ? "border-border/70 bg-background/90 backdrop-blur-sm"
           : "border-transparent bg-transparent"

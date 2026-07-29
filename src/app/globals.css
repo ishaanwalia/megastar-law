@@ -159,10 +159,20 @@
 }
 
 /* Sitewide paper-grain texture — cheap, static (no motion cost), breaks up
-   the flat parchment background without touching any element's own bg. */
+   the flat parchment background without touching any element's own bg.
+
+   ABSOLUTE, not fixed, on purpose. A viewport-sized position:fixed layer that
+   also carries mix-blend-mode forces iOS Safari to blend the whole page into a
+   single composited layer every frame, and the fixed header rides along with
+   it — that is what made the header come unpinned on iOS and nowhere else.
+   Anchored to the body it covers the full document instead, blends the same,
+   and scrolls with the paper (which is what real grain does anyway). */
+body {
+  position: relative;
+}
 body::before {
   content: "";
-  position: fixed;
+  position: absolute;
   inset: 0;
   z-index: 60;
   pointer-events: none;
@@ -238,6 +248,21 @@ body::before {
      what is behind stays colourful, a bright top-edge specular, and a soft
      inner rim. Anything sitting on this needs the backdrop to be interesting,
      which is why it is used over the sculpture and never on flat ground. */
+  /* One material, three fills. The rim, the specular and the drop shadow are
+     shared here so the hero floor panel, the stat cards and the deck cards
+     read as the same pane of glass — previously each had its own border alpha
+     and shadow spread, which is what made the treatment look inconsistent. */
+  .liquid-glass,
+  .liquid-glass-frost,
+  .liquid-glass-deck {
+    border: 1px solid color-mix(in oklch, white 50%, transparent);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.65),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.18),
+      0 26px 64px -32px rgba(31, 42, 51, 0.44);
+    isolation: isolate;
+  }
+
   .liquid-glass {
     /* iOS-26 style: the backdrop stays READABLE through the pane. The old
        values (22px blur, 42% fill) frosted it into opacity. Keep the fill
@@ -249,16 +274,12 @@ body::before {
     background: color-mix(in oklch, var(--card) 10%, transparent);
     -webkit-backdrop-filter: blur(7px) saturate(190%) brightness(1.06);
     backdrop-filter: blur(7px) saturate(190%) brightness(1.06);
-    border: 1px solid color-mix(in oklch, white 40%, transparent);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.55),
-      inset 0 -1px 0 rgba(255, 255, 255, 0.18),
-      0 26px 64px -34px rgba(31, 42, 51, 0.42);
-    isolation: isolate;
   }
   /* The specular sweep across the top third — what sells it as glass rather
      than frosted plastic. */
-  .liquid-glass::before {
+  .liquid-glass::before,
+  .liquid-glass-frost::before,
+  .liquid-glass-deck::before {
     content: "";
     position: absolute;
     inset: 0;
@@ -272,17 +293,18 @@ body::before {
       transparent 55%
     );
   }
-  .dark .liquid-glass {
-    background: color-mix(in oklch, var(--card) 16%, transparent);
+  .dark .liquid-glass,
+  .dark .liquid-glass-frost,
+  .dark .liquid-glass-deck {
     border-color: rgba(255, 255, 255, 0.12);
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.14),
-      0 26px 64px -34px rgba(0, 0, 0, 0.65);
+      0 26px 64px -32px rgba(0, 0, 0, 0.65);
+  }
+  .dark .liquid-glass {
+    background: color-mix(in oklch, var(--card) 16%, transparent);
   }
 
-  /* Deck variant: same glass, but opaque enough that seven stacked panes do
-     not bleed each other’s text through. The rail and the hero panel are
-     single layers and keep the fully see-through version. */
   /* Compositing budget: stacked backdrop-filters are expensive, and on small
      screens the header, panel and widgets can all be on screen at once. */
   @media (max-width: 639px) {
@@ -296,23 +318,13 @@ body::before {
     background: color-mix(in oklch, var(--card) 97%, transparent);
     -webkit-backdrop-filter: blur(16px) saturate(180%);
     backdrop-filter: blur(16px) saturate(180%);
-    border: 1px solid color-mix(in oklch, white 55%, transparent);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.7),
-      0 26px 64px -30px rgba(31, 42, 51, 0.45);
-    isolation: isolate;
   }
 
   /* Deck cards are opaque, full stop. They stack seven deep, so any
      transparency at all lets the card behind read through the front one.
-     They keep the glass rim and shadow, not the see-through. */
+     They keep the shared glass rim and shadow, not the see-through. */
   .liquid-glass-deck {
     background: var(--card);
-    border: 1px solid color-mix(in oklch, white 55%, transparent);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.75),
-      0 26px 64px -30px rgba(31, 42, 51, 0.45);
-    isolation: isolate;
   }
 
   /* Single-family shimmer, not a hue rotation — a light highlight sweeping

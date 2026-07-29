@@ -18,9 +18,12 @@ export function Marquee({
       )}
     >
       <div className="flex w-max motion-safe:animate-[marquee-scroll_28s_linear_infinite] hover:[animation-play-state:paused]">
+        {/* Second pass is the seamless-loop clone, not content — hidden from
+            the accessibility tree so the list is not announced twice. */}
         {[...items, ...items].map((item, i) => (
           <span
             key={i}
+            aria-hidden={i >= items.length || undefined}
             className="flex items-center gap-3 px-6 text-sm font-medium text-muted-foreground whitespace-nowrap"
           >
             {item}

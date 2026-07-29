@@ -5,8 +5,9 @@
 //   0  the marble plate is present from the start, transparent, no card —
 //      every later phase overlays it.
 //   1  practice cards rise from below and stack into a deck, upper right.
-//   2  the "Where the firm appears" heading + paragraph rise and park in the
-//      gap directly under the finished deck.
+//   2  the deck fades out COMPLETELY, then the "Where the firm appears"
+//      heading rises into the space it vacated. The two never share the
+//      screen — overlapping them read as a collision at every width.
 //   3  the credential rail tracks right-to-left across the bottom.
 //
 // Then the section releases. Falls back to a plain stacked layout under
@@ -49,8 +50,16 @@ const areaIcons: Record<string, LucideIcon> = {
 };
 
 // Phase boundaries in section progress.
-const CARDS_END = 0.56;
-const HEAD_END = 0.68;
+//   CARDS_END  last card lands, deck complete
+//   DECK_HOLD  deck sits still so the finished stack can actually be read
+//   DECK_OUT   deck is at zero opacity — nothing of it is painted past here
+//   HEAD_END   heading fully arrived; the rail takes over from here
+// The heading's window starts at DECK_OUT, not before, so there is no scroll
+// position at which cards and heading are both on screen.
+const CARDS_END = 0.52;
+const DECK_HOLD = 0.58;
+const DECK_OUT = 0.66;
+const HEAD_END = 0.78;
 
 function DeckCard({
   area,
@@ -161,10 +170,18 @@ export function PracticeSequence({
     return () => ro.disconnect();
   }, []);
 
-  const headY = useTransform(scrollYProgress, [CARDS_END, HEAD_END], [70, 0]);
+  // Deck clears out first, heading comes in after — strictly sequential.
+  // It lifts and shrinks slightly on the way out so it reads as the deck
+  // leaving to make room, not as the cards dissolving where they stand.
+  const deckOpacity = useTransform(scrollYProgress, [DECK_HOLD, DECK_OUT], [1, 0]);
+  const deckY = useTransform(scrollYProgress, [DECK_HOLD, DECK_OUT], [0, -60]);
+  const deckScale = useTransform(scrollYProgress, [DECK_HOLD, DECK_OUT], [1, 0.94]);
+  // Invisible cards must stop swallowing taps on the heading underneath.
+  const deckEvents = useTransform(deckOpacity, (o) => (o < 0.05 ? "none" : "auto"));
+  const headY = useTransform(scrollYProgress, [DECK_OUT, HEAD_END], [70, 0]);
   const headOpacity = useTransform(
     scrollYProgress,
-    [CARDS_END, CARDS_END + (HEAD_END - CARDS_END) * 0.6],
+    [DECK_OUT, DECK_OUT + (HEAD_END - DECK_OUT) * 0.6],
     [0, 1]
   );
   const railX = useTransform(scrollYProgress, [HEAD_END, 0.98], [0, -travel]);
@@ -178,10 +195,15 @@ export function PracticeSequence({
         Forums Pradeep is enrolled in or regularly appears before — drawn from
         his bar enrolment, not from network boilerplate.
       </p>
-      <p className="mt-2 text-[11px] tracking-[0.18em] text-muted-foreground/70 uppercase">
-        Keep scrolling — the rail moves with you
-      </p>
     </>
+  );
+
+  // Only true in the pinned build — the reduced-motion rail is a plain
+  // horizontal scroller and scrolling the page does nothing to it.
+  const railHint = (
+    <p className="mt-2 text-[11px] tracking-[0.18em] text-muted-foreground/70 uppercase">
+      Keep scrolling — the rail moves with you
+    </p>
   );
 
   if (reduceMotion) {
@@ -216,33 +238,13 @@ export function PracticeSequence({
     );
   }
 
+  // ponytail: the no-JS <noscript> mirror of this whole section is gone. It
+  // shipped a second full copy of both lists into every response, which is what
+  // every text/accessibility extraction was picking up as duplicated Practice
+  // Areas and duplicated credentials — invisible in a browser, present in the
+  // markup. Bring it back only if no-JS traffic ever shows up in analytics;
+  // Googlebot and screen readers both run JS and see the real section.
   return (
-    <>
-      <noscript>
-        <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:px-14">
-          <h2 className="font-heading text-3xl font-medium">Practice Areas</h2>
-          <ul className="mt-6 grid gap-4 sm:grid-cols-2">
-            {areas.map((a) => (
-              <li key={a.slug}>
-                <a href={`/practice-areas/${a.slug}`}>
-                  <strong>{a.title}</strong>
-                </a>
-                <p>{a.summary}</p>
-              </li>
-            ))}
-          </ul>
-          <h2 className="mt-10 font-heading text-3xl font-medium">
-            Where the firm appears
-          </h2>
-          <ul className="mt-4 grid gap-3 sm:grid-cols-2">
-            {credentials.map((c) => (
-              <li key={c.label}>
-                <strong>{c.label}</strong> — {c.detail}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </noscript>
     <section ref={container} className="relative h-[420vh]">
       <div className="sticky top-18 h-[calc(100svh-4.5rem)] overflow-hidden">
         <div className="mx-auto flex h-full max-w-7xl flex-col px-4 pt-6 pb-3 sm:px-6 sm:pt-8 sm:pb-6 lg:px-8 xl:px-12">
@@ -268,9 +270,20 @@ export function PracticeSequence({
               imageClassName="object-contain object-bottom opacity-45 lg:opacity-100"
             />
 
-            {/* Phases 1 + 2 — deck, then the heading parking beneath it. */}
-            <div className="relative col-start-1 flex min-h-0 flex-col lg:col-start-2">
-              <div className="relative min-h-0 flex-[3]">
+            {/* Phases 1 + 2 — deck, then the heading taking over the space the
+                deck vacates. Both are absolutely positioned in the same box so
+                the heading does not have to fit in a gap below a stack that is
+                taller than its container. */}
+            <div className="relative col-start-1 min-h-0 lg:col-start-2">
+              <motion.div
+                style={{
+                  opacity: deckOpacity,
+                  y: deckY,
+                  scale: deckScale,
+                  pointerEvents: deckEvents,
+                }}
+                className="absolute inset-0 origin-top [will-change:transform,opacity]"
+              >
                 {areas.map((area, i) => (
                   <DeckCard
                     key={area.slug}
@@ -280,12 +293,13 @@ export function PracticeSequence({
                     progress={scrollYProgress}
                   />
                 ))}
-              </div>
+              </motion.div>
               <motion.div
                 style={{ y: headY, opacity: headOpacity }}
-                className="relative z-20 shrink-0 pt-5"
+                className="absolute inset-x-0 top-0 z-20"
               >
                 {heading}
+                {railHint}
               </motion.div>
             </div>
           </div>
@@ -312,6 +326,5 @@ export function PracticeSequence({
         </div>
       </div>
     </section>
-    </>
   );
 }

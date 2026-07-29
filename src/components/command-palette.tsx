@@ -4,7 +4,7 @@
 // Esc, inert backdrop are all free), a plain substring filter over routes we
 // already declare — no search library, no index.
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Phone, Search } from "lucide-react";
 import { mainNav } from "@/lib/nav";
@@ -35,6 +35,7 @@ const items: Item[] = [
 
 export function CommandPalette() {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [active, setActive] = useState(0);
   const router = useRouter();
@@ -45,39 +46,59 @@ export function CommandPalette() {
       )
     : items;
 
+  // Every close routes through here. The native "close" event does not bubble,
+  // so neither React's onClose nor a delegated listener sees it — driving the
+  // mount flag from the call sites is the version that actually works.
+  const dismiss = useCallback(() => {
+    setOpen(false);
+    dialogRef.current?.close();
+  }, []);
+
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
+      const d = dialogRef.current;
+      if (!d) return;
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
-        const d = dialogRef.current;
-        if (!d) return;
-        if (d.open) d.close();
+        if (d.open) dismiss();
         else {
           setQuery("");
           setActive(0);
+          setOpen(true);
           d.showModal();
         }
+      } else if (e.key === "Escape" && d.open) {
+        // The browser closes the dialog on Esc by itself; this is only here to
+        // unmount the contents alongside it.
+        setOpen(false);
       }
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, []);
+  }, [dismiss]);
 
   function go(item: Item) {
-    dialogRef.current?.close();
+    dismiss();
     if (item.external) window.location.href = item.href;
     else router.push(item.href);
   }
 
+  // The contents are mounted ONLY while the palette is open. A closed <dialog>
+  // is display:none to a browser, but its children are still real nodes — so
+  // every route, practice area and the helpline were sitting in the markup
+  // after the footer, and showed up in text/accessibility extractions of the
+  // page. dismiss() plus the Escape branch above cover every way out.
   return (
     <dialog
       ref={dialogRef}
       aria-label="Search the site"
       onClick={(e) => {
-        if (e.target === dialogRef.current) dialogRef.current?.close();
+        if (e.target === dialogRef.current) dismiss();
       }}
       className="m-auto w-[min(34rem,92vw)] rounded-2xl border border-border bg-popover p-0 text-popover-foreground shadow-2xl backdrop:bg-ink/40 backdrop:backdrop-blur-sm"
     >
+      {!open ? null : (
+      <>
       <div className="flex items-center gap-3 border-b border-border px-4 py-3">
         <Search className="size-4 shrink-0 text-muted-foreground" />
         <input
@@ -136,6 +157,8 @@ export function CommandPalette() {
           </li>
         ))}
       </ul>
+      </>
+      )}
     </dialog>
   );
 }
