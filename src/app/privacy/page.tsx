@@ -12,13 +12,14 @@ const sections: { heading: string; body: React.ReactNode }[] = [
     heading: "Overview",
     body: (
       <>
-        {firm.name} ("we", "us", "the firm") respects the privacy of
-        visitors to this website and of prospective and existing clients.
-        This policy explains what personal data we collect, why, how it is
-        used and protected, and the rights available to you under India&apos;s
-        Digital Personal Data Protection Act, 2023 ("DPDP Act"). By using
-        this website or engaging the firm, you consent to the practices
-        described here.
+        {firm.name}{" "}
+        (&ldquo;we&rdquo;, &ldquo;us&rdquo;, &ldquo;the firm&rdquo;) respects the
+        privacy of visitors to this website and of prospective and existing
+        clients. This policy explains what personal data we collect, why, how it
+        is used and protected, and the rights available to you under
+        India&apos;s Digital Personal Data Protection Act, 2023 (&ldquo;DPDP
+        Act&rdquo;). By using this website or engaging the firm, you consent to
+        the practices described here.
       </>
     ),
   },

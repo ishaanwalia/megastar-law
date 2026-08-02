@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
   LayoutDashboard,
@@ -21,6 +20,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { logout } from "@/app/login/actions";
+import { NavLink } from "./nav-link";
 
 const navItems = [
   { title: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -52,36 +52,28 @@ export default async function DashboardLayout({
     .eq("id", user.id)
     .maybeSingle();
 
-  // Best-effort — never blocks rendering if it fails.
-  purgeExpiredTrash(supabase, profile?.role === "advocate").catch(() => {});
+  // Awaited deliberately: as a floating promise this silently never ran, because
+  // the serverless function can freeze the moment the response is sent. It's a
+  // few indexed deletes, and a failure must not block the dashboard.
+  await purgeExpiredTrash(supabase, profile?.role === "advocate").catch(
+    () => {}
+  );
 
   const navContent = (
     <>
       <nav className="flex flex-1 flex-col gap-1">
         {navItems.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-          >
+          <NavLink key={item.href} href={item.href}>
             <item.icon className="size-4" />
             {item.title}
-          </Link>
+          </NavLink>
         ))}
         <div className="my-2 border-t border-border" />
         {secondaryNavItems.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={
-              item.danger
-                ? "flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-medium text-destructive/80 transition-colors hover:bg-destructive/10 hover:text-destructive"
-                : "flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-            }
-          >
+          <NavLink key={item.href} href={item.href} danger={item.danger}>
             <item.icon className="size-4" />
             {item.title}
-          </Link>
+          </NavLink>
         ))}
       </nav>
       <div className="border-t border-border pt-4">

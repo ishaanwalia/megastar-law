@@ -1,12 +1,30 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { WhatsAppButton } from "@/components/whatsapp-button";
 
 const STORAGE_KEY = "megastar-cookie-consent";
+const CONSENT_EVENT = "megastar-consent-change";
+
+// localStorage is an external store, so read it through useSyncExternalStore
+// rather than an effect that setStates on mount — same result, one render
+// fewer, and no flash of a banner the visitor already dismissed.
+function subscribeConsent(onChange: () => void) {
+  window.addEventListener(CONSENT_EVENT, onChange);
+  window.addEventListener("storage", onChange);
+  return () => {
+    window.removeEventListener(CONSENT_EVENT, onChange);
+    window.removeEventListener("storage", onChange);
+  };
+}
+
+const getConsent = () => localStorage.getItem(STORAGE_KEY);
+// Server render has no localStorage; assume consented so the banner never
+// appears in the HTML and then vanish on hydration.
+const getConsentOnServer = () => "accepted";
 
 // Both widgets live in one `flex-col-reverse` container anchored to the
 // bottom of the screen: the cookie banner (first in DOM) sits flush at
@@ -15,17 +33,16 @@ const STORAGE_KEY = "megastar-cookie-consent";
 // of how many lines the banner wraps to. No JS-measured pixel offsets.
 export function FloatingWidgets() {
   const pathname = usePathname();
-  const [cookieVisible, setCookieVisible] = useState(false);
-
-  useEffect(() => {
-    if (!localStorage.getItem(STORAGE_KEY)) {
-      setCookieVisible(true);
-    }
-  }, []);
+  const consent = useSyncExternalStore(
+    subscribeConsent,
+    getConsent,
+    getConsentOnServer
+  );
+  const cookieVisible = consent === null;
 
   function acceptCookies() {
     localStorage.setItem(STORAGE_KEY, "accepted");
-    setCookieVisible(false);
+    window.dispatchEvent(new Event(CONSENT_EVENT));
   }
 
   // Internal CRM, not the public marketing site — neither widget belongs there.

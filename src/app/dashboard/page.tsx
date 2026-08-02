@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { format } from "date-fns";
 import { createClient } from "@/lib/supabase/server";
+import { formatISTDateTime } from "@/lib/crm/dates";
 import { Card } from "@/components/ui/card";
 import type { Client, Appointment } from "@/lib/crm/types";
 
@@ -119,7 +119,7 @@ export default async function DashboardOverviewPage() {
               >
                 <span>{apt.title}</span>
                 <span className="text-muted-foreground">
-                  {format(new Date(apt.scheduled_at), "d MMM, h:mm a")}
+                  {formatISTDateTime(apt.scheduled_at)}
                 </span>
               </div>
             ))}

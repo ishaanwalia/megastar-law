@@ -5,15 +5,32 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { Client } from "@/lib/crm/types";
 import { StageSelect } from "./stage-select";
+import { SearchField } from "../search-field";
 
-export default async function ClientsPage() {
+export default async function ClientsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string }>;
+}) {
+  const { q } = await searchParams;
   const supabase = await createClient();
-  const { data } = await supabase
+
+  let query = supabase
     .from("clients")
     .select("*")
     .is("deleted_at", null)
     .order("created_at", { ascending: false });
 
+  if (q?.trim()) {
+    // Strip PostgREST's or() delimiters so a comma or paren typed in the search
+    // box can't break out of the filter expression.
+    const term = q.trim().replace(/[,()\\*]/g, " ");
+    query = query.or(
+      `full_name.ilike.%${term}%,phone.ilike.%${term}%,email.ilike.%${term}%`
+    );
+  }
+
+  const { data } = await query;
   const clients = (data ?? []) as Client[];
 
   return (
@@ -25,6 +42,10 @@ export default async function ClientsPage() {
         <Button size="sm" nativeButton={false} render={<Link href="/dashboard/clients/new" />}>
           <Plus className="size-4" /> New Lead
         </Button>
+      </div>
+
+      <div className="mt-5">
+        <SearchField placeholder="Search name, phone or email…" />
       </div>
 
       <div className="mt-6 overflow-x-auto rounded-xl border border-border">
@@ -74,7 +95,7 @@ export default async function ClientsPage() {
                   colSpan={5}
                   className="px-4 py-8 text-center text-muted-foreground"
                 >
-                  No leads or clients yet.
+                  {q ? `No matches for “${q}”.` : "No leads or clients yet."}
                 </td>
               </tr>
             )}

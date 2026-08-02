@@ -15,7 +15,7 @@
 // again each time — that's the "site loading in real time" effect.
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import {
   AnimatePresence,
   motion,
@@ -38,15 +38,13 @@ type Area = { slug: string; title: string; summary: string };
 
 export function HoverRevealList({ areas }: { areas: Area[] }) {
   const [active, setActive] = useState<number | null>(null);
-  const [loaded, setLoaded] = useState(false);
+  // Track *which* row finished loading rather than a bare boolean. A fresh
+  // iframe mounts per hover, so "loaded" is derived by comparison — no effect
+  // needed to reset it, and the skeleton can never show a stale last frame.
+  const [loadedFor, setLoadedFor] = useState<number | null>(null);
+  const loaded = loadedFor !== null && loadedFor === active;
   const reduceMotion = useReducedMotion();
   const wrap = useRef<HTMLDivElement>(null);
-
-  // Fresh iframe mount per hover starts unloaded — reset so the skeleton
-  // shows again instead of the previous page's last frame.
-  useEffect(() => {
-    setLoaded(false);
-  }, [active]);
 
   // A same-origin iframe can finish loading before React attaches the onLoad
   // prop (fast/cached navigations especially), which leaves the skeleton
@@ -55,7 +53,7 @@ export function HoverRevealList({ areas }: { areas: Area[] }) {
   function handlePlateRef(node: HTMLIFrameElement | null) {
     if (!node) return;
     if (node.contentDocument?.readyState === "complete") {
-      setLoaded(true);
+      setLoadedFor(active);
     }
   }
 
@@ -158,7 +156,7 @@ export function HoverRevealList({ areas }: { areas: Area[] }) {
                     title={`${areas[active].title} — live preview`}
                     tabIndex={-1}
                     aria-hidden="true"
-                    onLoad={() => setLoaded(true)}
+                    onLoad={() => setLoadedFor(active)}
                     className={`pointer-events-none absolute top-0 left-0 origin-top-left border-0 transition-opacity duration-300 ${
                       loaded ? "opacity-100" : "opacity-0"
                     }`}

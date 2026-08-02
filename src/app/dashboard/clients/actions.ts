@@ -3,13 +3,15 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { createClient } from "@/lib/supabase/server";
+import { requireUser } from "@/lib/supabase/server";
 import type { ClientStage } from "@/lib/crm/types";
 
 const clientSchema = z.object({
   full_name: z.string().trim().min(2),
   phone: z.string().trim().min(7),
-  email: z.string().trim().optional().or(z.literal("")),
+  // Optional, but a typo'd address is worse than a blank one — the public
+  // contact form already validates this, the CRM was the gap.
+  email: z.union([z.email(), z.literal("")]).optional(),
   address: z.string().trim().optional(),
   alternate_phone: z.string().trim().optional(),
   id_proof_type: z.string().trim().optional(),
@@ -47,7 +49,7 @@ function readClientForm(formData: FormData) {
 export async function createClientRecord(formData: FormData) {
   const parsed = readClientForm(formData);
 
-  const supabase = await createClient();
+  const { supabase } = await requireUser();
   const { data, error } = await supabase
     .from("clients")
     .insert({
@@ -67,14 +69,13 @@ export async function createClientRecord(formData: FormData) {
 export async function updateClientRecord(clientId: string, formData: FormData) {
   const parsed = readClientForm(formData);
 
-  const supabase = await createClient();
+  const { supabase } = await requireUser();
   const { error } = await supabase
     .from("clients")
     .update({
       ...parsed,
       email: parsed.email || null,
       date_of_birth: parsed.date_of_birth || null,
-      updated_at: new Date().toISOString(),
     })
     .eq("id", clientId);
 
@@ -86,10 +87,10 @@ export async function updateClientRecord(clientId: string, formData: FormData) {
 }
 
 export async function updateClientStage(clientId: string, stage: ClientStage) {
-  const supabase = await createClient();
+  const { supabase } = await requireUser();
   const { error } = await supabase
     .from("clients")
-    .update({ stage, updated_at: new Date().toISOString() })
+    .update({ stage })
     .eq("id", clientId);
 
   if (error) throw new Error(error.message);
@@ -98,26 +99,66 @@ export async function updateClientStage(clientId: string, stage: ClientStage) {
 }
 
 export async function trashClient(clientId: string) {
-  const supabase = await createClient();
+  const { supabase } = await requireUser();
+  // One timestamp for the client and every matter it drags with it. Sharing the
+  // exact value is what lets restore tell a cascaded matter apart from one that
+  // was already in the Trash on its own — see restoreClient.
+  const deletedAt = new Date().toISOString();
+
   const { error } = await supabase
     .from("clients")
-    .update({ deleted_at: new Date().toISOString() })
+    .update({ deleted_at: deletedAt })
     .eq("id", clientId);
 
   if (error) throw new Error(error.message);
+
+  // Without this, a trashed client's matters stayed listed on /dashboard/matters
+  // — and permanently deleting the client later FK-cascaded them away silently.
+  const { error: mattersError } = await supabase
+    .from("matters")
+    .update({ deleted_at: deletedAt })
+    .eq("client_id", clientId)
+    .is("deleted_at", null);
+
+  if (mattersError) throw new Error(mattersError.message);
+
   revalidatePath("/dashboard/clients");
+  revalidatePath("/dashboard/matters");
   revalidatePath("/dashboard/trash");
   redirect("/dashboard/clients");
 }
 
 export async function restoreClient(clientId: string) {
-  const supabase = await createClient();
+  const { supabase } = await requireUser();
+
+  // Read the cascade stamp before clearing it — it's the only thing that
+  // identifies which matters went into the Trash *with* this client.
+  const { data: client } = await supabase
+    .from("clients")
+    .select("deleted_at")
+    .eq("id", clientId)
+    .single();
+
   const { error } = await supabase
     .from("clients")
     .update({ deleted_at: null })
     .eq("id", clientId);
 
   if (error) throw new Error(error.message);
+
+  // Matters trashed in the same sweep come back; ones trashed on their own
+  // earlier stay in the Trash, which is what the user actually asked for.
+  if (client?.deleted_at) {
+    const { error: mattersError } = await supabase
+      .from("matters")
+      .update({ deleted_at: null })
+      .eq("client_id", clientId)
+      .eq("deleted_at", client.deleted_at);
+
+    if (mattersError) throw new Error(mattersError.message);
+  }
+
   revalidatePath("/dashboard/clients");
+  revalidatePath("/dashboard/matters");
   revalidatePath("/dashboard/trash");
 }

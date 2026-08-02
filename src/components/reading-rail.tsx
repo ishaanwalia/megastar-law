@@ -14,13 +14,19 @@ const HEADER_OFFSET = 96; // 4.5rem sticky header + breathing room
 
 export function ReadingRail({ scope = "main" }: { scope?: string }) {
   const pathname = usePathname();
-  const [sections, setSections] = useState<{ id: string; text: string }[]>([]);
-  const [activeId, setActiveId] = useState("");
+  // Sections are stamped with the route they were read from, so a stale list is
+  // discarded during render rather than cleared by a setState inside an effect
+  // (which costs an extra cascading render on every navigation).
+  const [found, setFound] = useState<{
+    path: string;
+    sections: { id: string; text: string }[];
+  }>({ path: pathname, sections: [] });
+  const [active, setActive] = useState({ path: pathname, id: "" });
+
+  const sections = found.path === pathname ? found.sections : [];
+  const activeId = active.path === pathname ? active.id : "";
 
   useEffect(() => {
-    setSections([]);
-    setActiveId("");
-
     // Headings mount with the route; yield once so the new page is in. A
     // macrotask, not rAF — rAF never fires in a backgrounded tab, which would
     // leave the rail permanently empty there.
@@ -43,9 +49,10 @@ export function ReadingRail({ scope = "main" }: { scope?: string }) {
         }
         h.style.scrollMarginTop = `${HEADER_OFFSET}px`;
       });
-      setSections(
-        heads.map((h) => ({ id: h.id, text: h.textContent!.trim() }))
-      );
+      setFound({
+        path: pathname,
+        sections: heads.map((h) => ({ id: h.id, text: h.textContent!.trim() })),
+      });
 
       // Recompute from ALL heading positions rather than trusting whichever
       // observer entry fired: with a narrow band, scrolling through a gap
@@ -57,7 +64,7 @@ export function ReadingRail({ scope = "main" }: { scope?: string }) {
         for (const h of heads) {
           if (h.getBoundingClientRect().top <= line) current = h;
         }
-        setActiveId(current.id);
+        setActive({ path: pathname, id: current.id });
       };
       sync();
       // Scroll listener drives the common case; the observer is the backstop

@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { format } from "date-fns";
 import { Pencil } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { formatISTDate, formatISTDateTime } from "@/lib/crm/dates";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -127,7 +127,7 @@ export default async function MatterDetailPage({
             Filing Date
           </div>
           <div className="mt-0.5 text-sm">
-            {m.filing_date ? format(new Date(m.filing_date), "d MMM yyyy") : "—"}
+            {m.filing_date ? formatISTDate(m.filing_date) : "—"}
           </div>
         </div>
         <div>
@@ -135,10 +135,14 @@ export default async function MatterDetailPage({
             Next Hearing
           </div>
           <div className="mt-0.5 text-sm">
-            {m.next_hearing_date
-              ? format(new Date(m.next_hearing_date), "d MMM yyyy")
-              : "—"}
+            {m.next_hearing_date ? formatISTDate(m.next_hearing_date) : "—"}
           </div>
+        </div>
+        <div className="sm:col-span-2">
+          <div className="text-xs tracking-wide text-muted-foreground uppercase">
+            Last Updated
+          </div>
+          <div className="mt-0.5 text-sm">{formatISTDateTime(m.updated_at)}</div>
         </div>
       </Card>
 
@@ -164,7 +168,7 @@ export default async function MatterDetailPage({
           {noteList.map((note) => (
             <div key={note.id} className="border-l-2 border-border pl-4">
               <div className="text-xs text-muted-foreground">
-                {format(new Date(note.created_at), "d MMM yyyy, h:mm a")}
+                {formatISTDateTime(note.created_at)}
               </div>
               <p className="mt-1 text-sm whitespace-pre-wrap">{note.body}</p>
             </div>

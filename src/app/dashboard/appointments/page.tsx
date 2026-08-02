@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { format } from "date-fns";
-import { Plus } from "lucide-react";
+import { Plus, Pencil } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { formatISTDateTime } from "@/lib/crm/dates";
 import { Button } from "@/components/ui/button";
 import type { Appointment } from "@/lib/crm/types";
 import { trashAppointment } from "./actions";
@@ -56,8 +56,16 @@ export default async function AppointmentsPage() {
             </div>
             <div className="flex items-center gap-3">
               <div className="text-sm text-muted-foreground">
-                {format(new Date(apt.scheduled_at), "d MMM yyyy, h:mm a")}
+                {formatISTDateTime(apt.scheduled_at)}
               </div>
+              <Button
+                variant="outline"
+                size="sm"
+                nativeButton={false}
+                render={<Link href={`/dashboard/appointments/${apt.id}/edit`} />}
+              >
+                <Pencil className="size-3.5" /> Edit
+              </Button>
               <DeleteButton
                 label=""
                 confirmMessage={`Move "${apt.title}" to Trash?`}

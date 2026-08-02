@@ -1,8 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { SubmitButton } from "@/components/submit-button";
+import { AppointmentFormFields } from "../appointment-form-fields";
 import { createAppointment } from "../actions";
 
 export default async function NewAppointmentPage() {
@@ -20,54 +18,10 @@ export default async function NewAppointmentPage() {
       </h1>
 
       <form action={createAppointment} className="mt-6">
-        <FieldGroup>
-          <Field>
-            <FieldLabel htmlFor="title">Title</FieldLabel>
-            <Input id="title" name="title" required className="h-11" />
-          </Field>
-
-          <Field>
-            <FieldLabel htmlFor="scheduled_at">Date &amp; time</FieldLabel>
-            <Input
-              id="scheduled_at"
-              name="scheduled_at"
-              type="datetime-local"
-              required
-              className="h-11"
-            />
-          </Field>
-
-          <Field>
-            <FieldLabel htmlFor="client_id">Client (optional)</FieldLabel>
-            <select
-              id="client_id"
-              name="client_id"
-              defaultValue=""
-              className="h-11 w-full rounded-lg border border-input bg-transparent px-3 text-base outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 md:text-sm"
-            >
-              <option value="">None</option>
-              {(clients ?? []).map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.full_name}
-                </option>
-              ))}
-            </select>
-          </Field>
-
-          <Field>
-            <FieldLabel htmlFor="location">Location</FieldLabel>
-            <Input id="location" name="location" className="h-11" />
-          </Field>
-
-          <Field>
-            <FieldLabel htmlFor="notes">Notes</FieldLabel>
-            <Textarea id="notes" name="notes" rows={3} />
-          </Field>
-
-          <SubmitButton size="lg" pendingText="Saving…">
-            Save Appointment
-          </SubmitButton>
-        </FieldGroup>
+        <AppointmentFormFields clients={clients ?? []} />
+        <SubmitButton size="lg" pendingText="Saving…" className="mt-6">
+          Save Appointment
+        </SubmitButton>
       </form>
     </div>
   );

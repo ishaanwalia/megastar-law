@@ -1,13 +1,14 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { format } from "date-fns";
 import { Plus, Pencil } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { formatISTDate, formatISTDateTime } from "@/lib/crm/dates";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { Client, Matter } from "@/lib/crm/types";
 import { StageSelect } from "../stage-select";
+import { MaskedId } from "../masked-id";
 import { trashClient } from "../actions";
 import { DeleteButton } from "../../delete-button";
 
@@ -86,9 +87,7 @@ export default async function ClientDetailPage({
             Date of Birth
           </div>
           <div className="mt-0.5 text-sm">
-            {c.date_of_birth
-              ? format(new Date(c.date_of_birth), "d MMM yyyy")
-              : "—"}
+            {c.date_of_birth ? formatISTDate(c.date_of_birth) : "—"}
           </div>
         </div>
         <div className="sm:col-span-2">
@@ -104,9 +103,19 @@ export default async function ClientDetailPage({
             ID Proof
           </div>
           <div className="mt-0.5 text-sm">
-            {c.id_proof_type
-              ? `${c.id_proof_type}${c.id_proof_number ? ` — ${c.id_proof_number}` : ""}`
-              : "—"}
+            {c.id_proof_type ? (
+              <>
+                {c.id_proof_type}
+                {c.id_proof_number && (
+                  <>
+                    {" — "}
+                    <MaskedId value={c.id_proof_number} />
+                  </>
+                )}
+              </>
+            ) : (
+              "—"
+            )}
           </div>
         </div>
         <div>
@@ -142,8 +151,14 @@ export default async function ClientDetailPage({
           <div className="text-xs tracking-wide text-muted-foreground uppercase">
             Added
           </div>
+          <div className="mt-0.5 text-sm">{formatISTDate(c.created_at)}</div>
+        </div>
+        <div>
+          <div className="text-xs tracking-wide text-muted-foreground uppercase">
+            Last Updated
+          </div>
           <div className="mt-0.5 text-sm">
-            {format(new Date(c.created_at), "d MMM yyyy")}
+            {formatISTDateTime(c.updated_at)}
           </div>
         </div>
         {c.notes && (
